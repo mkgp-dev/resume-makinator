@@ -1,0 +1,38 @@
+@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: night --default;
+}
+
+@layer base {
+  @theme {
+    --font-sans: 'Inter Variable', sans-serif;
+    --font-manrope: 'Manrope Variable', sans-serif;
+
+    --animate-fade-in: fade-in 0.5s ease-in-out forwards;
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  }
+
+  html {
+    @apply scroll-smooth antialiased select-none;
+  }
+
+  body {
+    @apply min-h-screen bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-100;
+  }
+}
+
+@layer utilities {
+  .primary-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #3ABDF8;
+  }
+
+  .primary-scroll::-webkit-scrollbar {
+    width: 0.3rem;
+  }
+}
