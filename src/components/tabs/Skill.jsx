@@ -1,4 +1,5 @@
 import { useSkillStore } from "../../hooks/useSkillStore";
+import Card from "../ui/Card";
 import MultiSelect from "../../features/multiselect/MultiSelect";
 import SortableList from "../../features/sortable/List";
 import SkillForm from "../forms/SkillForm";
