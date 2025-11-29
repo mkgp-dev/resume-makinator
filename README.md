@@ -8,7 +8,7 @@
   <p align="center">
     A modern, browser-based tool that helps anyone create a polished resume.
     <br />
-    <a href="#">Visit the site</a>
+    <a href="https://resume-makinator.pages.dev">Visit the site</a>
     &middot;
     <a href="https://github.com/mkgp-dev/resume-makinator/issues/new?template=bug_report.md">Report a bug</a>
     &middot;
