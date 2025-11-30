@@ -8,8 +8,8 @@ export default function CoreSkill({ items }) {
         },
         item: {
             width: "50%",
-            flexDirection: "row",
-            gap: 2,
+            paddingRight: 6,
+            marginBottom: 2,
         },
         header: {
             fontWeight: "semibold",
@@ -18,14 +18,20 @@ export default function CoreSkill({ items }) {
             color: "#6F6F7D",
         },
     });
-    
+
     return (
         <View style={style.row}>
-            {items.map((item, index)=> (
+            {items.map((item, index) => (
                 <View key={index} style={style.item}>
-                    <Text style={style.header}>{item.devLanguage}</Text>
-                    <Text>–</Text>
-                    <Text style={style.subheader}>{item.devFramework}</Text>
+                    <Text>
+                        <Text style={style.header}>{item.devLanguage}</Text>
+                        <Text> – </Text>
+                        <Text style={style.subheader}>
+                            {Array.isArray(item.devFramework)
+                                ? item.devFramework.join(", ")
+                                : item.devFramework}
+                        </Text>
+                    </Text>
                 </View>
             ))}
         </View>
