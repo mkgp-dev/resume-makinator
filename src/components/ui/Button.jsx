@@ -9,6 +9,7 @@ export default function Button({
     onClick,
     isDisabled = false,
     alignCenter = false,
+    isStretch = false,
 }) {
     const styles = {
         default: "btn-primary rounded-md",
@@ -32,6 +33,7 @@ export default function Button({
                 icon && "flex gap-2",
                 alignCenter ? "items-center" : "justify-start",
                 iconOnly && "p-0",
+                isStretch && "w-full",
             )}
             disabled={isDisabled}
         >

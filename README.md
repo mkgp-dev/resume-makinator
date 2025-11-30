@@ -49,7 +49,7 @@ By making this tool public, I want to help anyone who struggles with creating a 
 - **Zustand** for lightweight global state management of resume data and configuration.
 - **localForage** for persistent local storage using IndexedDB under the hood.
 - **react-pdf** for generating the PDF-like resume preview and export.
-- **dnd kit** for drag-and-drop reordering of entries inside sections.
+- **dndkit** for drag-and-drop reordering of entries inside sections.
 - **react-select** for enhanced select inputs.
 - **use-debounce** for smoothing out updates during rapid typing.
 - **nanoid** for generating stable IDs for dynamic list items.

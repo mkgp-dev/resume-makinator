@@ -15,7 +15,7 @@ export default function Card({
     return (
         <div className={clsx(
             "card bg-slate-700/90 border border-slate-600/70 rounded-lg w-full",
-            isPreview && "h-[45vh] md:h-full",
+            isPreview && "md:h-full",
             noRadius && "rounded-none",
         )}>
             <div className={clsx("card-body", noPadding && "p-0")}>
