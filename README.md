@@ -24,7 +24,7 @@ Resume Makinator started from a simple problem: a friend didn’t want to use Wo
 
 Right now, this project uses a single, opinionated template focused on clarity and readability. The goal is to expand this over time with more templates based on research into resume designs that are widely accepted and appropriate for different roles and industries.
 
-By making this tool public, I want to help anyone who struggles with creating a resume. No complicated editors, no layout headaches! just open it in the br owser, fill in the blanks, toggle the sections you need, quickly fix the order of entries, and you’re ready to export.
+By making this tool public, I want to help anyone who struggles with creating a resume. No complicated editors, no layout headaches! just open it in the browser, fill in the blanks, toggle the sections you need, quickly fix the order of entries, and you’re ready to export.
 
 
 
