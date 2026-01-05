@@ -30,9 +30,6 @@ By making this tool public, I want to help anyone who struggles with creating a 
 
 ### Features
 
-> [!NOTE]
-> The current template (Whitepaper) always ends with the **References** section.
-
 - Work in a structured, section-based editor instead of a blank document.
 - Control which sections appear by enabling or disabling them for the final preview.
 - Reorder entries inside a section using drag-and-drop to quickly fix the order.
