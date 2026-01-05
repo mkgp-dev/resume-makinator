@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { useResumeStore } from "../../hooks/useResumeStore";
-import Modal from "../ui/Modal";
-import Button from "../ui/Button";
+import { useResumeStore } from "@/stores/useResumeStore";
+import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
 
 export default function PrivacyModal() {
     const dialogRef = useRef(null);

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
-import Dot from "../../../components/icons/Dot";
+import Dot from "@/features/viewer/components/icons/Dot";
 
 export default function Project({ items, config }) {
     const styles = StyleSheet.create({
@@ -8,6 +8,7 @@ export default function Project({ items, config }) {
         },
         row: {
             flexDirection: "row",
+            alignItems: "center",
             gap: 4,
         },
         name: {
@@ -20,6 +21,9 @@ export default function Project({ items, config }) {
         framework: {
             color: "#6F6F7D",
         },
+        dot: {
+            marginTop: 2,
+        },
         lastChild: {
             marginBottom: 0,
         },
@@ -30,7 +34,7 @@ export default function Project({ items, config }) {
             <View key={item.id} style={[styles.container, index === items.length - 1 && styles.lastChild]}>
                 {config.bulletText ? (
                     <View style={styles.row}>
-                        <Dot isLarge={true} />
+                        <Dot isLarge={true} style={styles.dot} />
                         <Text style={styles.name}>{item.projectName}</Text>
                     </View>
                 ) : (

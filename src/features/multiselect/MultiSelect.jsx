@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { LANGUAGE_OPTIONS } from "./constants/Languages";
-import { SOFT_SKILL_OPTIONS } from "./constants/SoftSkills";
-import { FRAMEWORK_OPTIONS } from "./constants/Frameworks";
-import { DEV_LANGUAGE_OPTIONS } from "./constants/DevLanguages";
+import { LANGUAGE_OPTIONS } from "@/features/multiselect/constants/Languages";
+import { SOFT_SKILL_OPTIONS } from "@/features/multiselect/constants/SoftSkills";
+import { FRAMEWORK_OPTIONS } from "@/features/multiselect/constants/Frameworks";
+import { DEV_LANGUAGE_OPTIONS } from "@/features/multiselect/constants/DevLanguages";
 import { components } from "react-select";
 import CreatableSelect from "react-select/creatable";
 import clsx from "clsx";
+
+const SelectOption = components.Option;
 
 const OPTIONS = {
     language: LANGUAGE_OPTIONS,
@@ -36,7 +38,7 @@ export default function MultiSelect({
 
     const properMappingValue = (text) => {
         if (!text) return null;
-        const found = setOptions.find(item => item.label.toLowerCase() === text.toLowerCase() || String.apply(item.value).toLowerCase() === text.toLowerCase());
+        const found = setOptions.find(item => item.label.toLowerCase() === text.toLowerCase() || String(item.value).toLowerCase() === text.toLowerCase());
         return found || { label: text, value: text };
     }
 
@@ -87,7 +89,7 @@ export default function MultiSelect({
     const checkBoxOption = (props) => {
         const { isSelected } = props;
         return (
-            <components.Option {...props}>
+            <SelectOption {...props}>
                 <div className="flex items-center gap-2">
                     {allowMultiple && (
                         <input
@@ -99,7 +101,7 @@ export default function MultiSelect({
                     )}
                     <span>{props.label}</span>
                 </div>
-            </components.Option>
+            </SelectOption>
         );
     };
 

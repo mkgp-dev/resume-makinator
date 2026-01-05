@@ -1,5 +1,5 @@
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import Button from "./Button";
+import Button from "@/components/ui/Button";
 import clsx from "clsx";
 
 export default function Card({

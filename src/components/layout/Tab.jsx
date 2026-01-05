@@ -1,14 +1,14 @@
-import About from "../tabs/About";
-import Achievement from "../tabs/Achievement";
-import Certificate from "../tabs/Certificate";
-import Configuration from "../tabs/Configuration";
-import Data from "../tabs/Data";
-import Education from "../tabs/Education";
-import Information from "../tabs/Information";
-import Project from "../tabs/Project";
-import Reference from "../tabs/Reference";
-import Skill from "../tabs/Skill";
-import Work from "../tabs/Work";
+import About from "@/features/editor/tabs/About";
+import Achievement from "@/features/editor/tabs/Achievement";
+import Certificate from "@/features/editor/tabs/Certificate";
+import Configuration from "@/features/editor/tabs/Configuration";
+import Data from "@/features/editor/tabs/Data";
+import Education from "@/features/editor/tabs/Education";
+import Information from "@/features/editor/tabs/Information";
+import Project from "@/features/editor/tabs/Project";
+import Reference from "@/features/editor/tabs/Reference";
+import Skill from "@/features/editor/tabs/Skill";
+import Work from "@/features/editor/tabs/Work";
 
 export default function Tab({ active }) {
     

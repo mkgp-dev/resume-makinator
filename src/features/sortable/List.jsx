@@ -1,9 +1,9 @@
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useSortStore } from "../../hooks/useSortStore";
+import { useSortHook } from "@/hooks/useSort";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import Button from "../../components/ui/Button";
-import SortableItem from "./Item";
+import Button from "@/components/ui/Button";
+import SortableItem from "@/features/sortable/Item";
 
 
 export default function SortableList({
@@ -12,7 +12,7 @@ export default function SortableList({
     renderItem,
     onClick
 }) {
-    const { id, items, remove, handleDrag } = useSortStore({ section });
+    const { id, items, remove, handleDrag } = useSortHook({ section });
     const sensors = useSensors(useSensor(PointerSensor));
 
     return (

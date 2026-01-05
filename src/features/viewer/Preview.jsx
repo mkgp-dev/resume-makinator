@@ -1,49 +1,32 @@
 import { pdf } from "@react-pdf/renderer";
-import { useResumeStore } from "../../hooks/useResumeStore";
-import { useState, useEffect, useMemo } from "react";
+import { useResumeStore } from "@/stores/useResumeStore";
+import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import { InformationCircleIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import Render from "./templates/Render";
-import Button from "../../components/ui/Button";
+import Render from "@/features/viewer/Render";
+import Button from "@/components/ui/Button";
+import { useShallow } from "zustand/shallow";
 
 const DEBOUNCE_MS = 300;
 
-const previewData = (store) => ({
-    activePanel: store.activePanel,
-    personalDetails: store.personalDetails,
-    education: store.education,
-    references: store.references,
-    softSkills: store.softSkills,
-    coreSkills: store.coreSkills,
-    workExperiences: store.workExperiences,
-    personalProjects: store.personalProjects,
-    certificates: store.certificates,
-    achievements: store.achievements,
-    configuration: store.configuration,
-    enableInRender: store.enableInRender,
-    template: store.template,
+const previewDataSelector = (state) => ({
+    personalDetails: state.personalDetails,
+    education: state.education,
+    references: state.references,
+    softSkills: state.softSkills,
+    coreSkills: state.coreSkills,
+    workExperiences: state.workExperiences,
+    personalProjects: state.personalProjects,
+    certificates: state.certificates,
+    achievements: state.achievements,
+    configuration: state.configuration,
+    enableInRender: state.enableInRender,
+    template: state.template,
 });
 
 export default function Preview() {
-    const store = useResumeStore();
-
-    const stableObject = useMemo(() => previewData(store), [
-        store.activePanel,
-        store.personalDetails,
-        store.education,
-        store.references,
-        store.softSkills,
-        store.coreSkills,
-        store.workExperiences,
-        store.personalProjects,
-        store.certificates,
-        store.achievements,
-        store.configuration,
-        store.enableInRender,
-        store.template,
-    ]);
-
-    const [debouncedData] = useDebounce(stableObject, DEBOUNCE_MS);
+    const previewData = useResumeStore(useShallow(previewDataSelector));
+    const [debouncedData] = useDebounce(previewData, DEBOUNCE_MS);
     const [pdfUrl, setPdfUrl] = useState(null);
 
     useEffect(() => {
@@ -59,7 +42,7 @@ export default function Preview() {
                 objectUrl = URL.createObjectURL(blob);
                 setPdfUrl(objectUrl);
             } catch (error) {
-                console.error("An error has occured", error);
+                console.error("An error has occurred", error);
             }
         }
 
@@ -72,9 +55,6 @@ export default function Preview() {
     }, [debouncedData]);
 
     const src = pdfUrl ? `${pdfUrl}#view=Fit` : undefined;
-    const blobId = pdfUrl
-        ? pdfUrl.split("/").pop() ?? null
-        : null;
 
     return (
         <>

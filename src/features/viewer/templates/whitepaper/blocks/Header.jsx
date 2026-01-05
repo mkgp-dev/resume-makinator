@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, Image, Link } from "@react-pdf/renderer";
-import Home from "../../../components/icons/Home";
-import Mail from "../../../components/icons/Mail";
-import Phone from "../../../components/icons/Phone";
-import Github from "../../../components/icons/Github";
-import Linkedin from "../../../components/icons/Linkedin";
+import Home from "@/features/viewer/components/icons/Home";
+import Mail from "@/features/viewer/components/icons/Mail";
+import Phone from "@/features/viewer/components/icons/Phone";
+import Github from "@/features/viewer/components/icons/Github";
+import Linkedin from "@/features/viewer/components/icons/Linkedin";
 
 const styles = StyleSheet.create({
     container: {

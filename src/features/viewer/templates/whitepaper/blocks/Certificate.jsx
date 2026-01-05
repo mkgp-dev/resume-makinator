@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
-import Dot from "../../../components/icons/Dot";
+import Dot from "@/features/viewer/components/icons/Dot";
 
 export default function Certificate({ items, config }) {
     const styles = StyleSheet.create({
@@ -8,6 +8,7 @@ export default function Certificate({ items, config }) {
         },
         row: {
             flexDirection: "row",
+            alignItems: "center",
             gap: 3,
         },
         name: {
@@ -25,6 +26,9 @@ export default function Certificate({ items, config }) {
         margin: {
             marginLeft: 9,
         },
+        dot: {
+            marginTop: 2,
+        },
         lastChild: {
             marginBottom: 0,
         },
@@ -36,7 +40,7 @@ export default function Certificate({ items, config }) {
                 <View style={styles.header}>
                     {config.bulletText ? (
                         <View style={styles.row}>
-                            <Dot />
+                            <Dot style={styles.dot} />
                             <Text style={styles.name}>{item.certificateName}</Text>
                         </View>
                     ) : (
