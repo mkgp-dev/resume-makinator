@@ -1,10 +1,10 @@
-import { useExperienceStore } from "../../hooks/useExperienceStore";
+import { useExperienceHook } from "@/hooks/useExperience";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import Button from "./Button";
-import Textarea from "./Textarea";
+import Button from "@/components/ui/Button";
+import Textarea from "@/components/ui/Textarea";
 
 export default function BulletList({ item }) {
-    const { modify } = useExperienceStore();
+    const { modify } = useExperienceHook();
 
     const add = () => modify("workExperiences", item.id, { bulletSummary: [ ...item.bulletSummary, "" ] });
     const remove = (index) => {

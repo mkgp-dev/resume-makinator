@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 
 export default function Reference({ items }) {
-    const style = StyleSheet.create({
+    const styles = StyleSheet.create({
         row: {
             flexDirection: "row",
         },
@@ -18,17 +18,17 @@ export default function Reference({ items }) {
     });
 
     return (
-        <View style={style.row}>
-            {items.map((item, index) => (
-                <View key={item.id} style={style.item}>
-                    <Text style={style.header}>{item.fullName}</Text>
-                    <View style={style.row}>
-                        <Text style={style.subheader}>{item.jobTitle}</Text>
-                        <Text style={style.subheader}>, </Text>
-                        <Text style={style.subheader}>{item.companyName}</Text>
+        <View style={styles.row}>
+            {items.map((item) => (
+                <View key={item.id} style={styles.item}>
+                    <Text style={styles.header}>{item.fullName}</Text>
+                    <View style={styles.row}>
+                        <Text style={styles.subheader}>{item.jobTitle}</Text>
+                        <Text style={styles.subheader}>, </Text>
+                        <Text style={styles.subheader}>{item.companyName}</Text>
                     </View>
-                    {item.defaultPhoneNumber && <Text style={style.subheader}>+{item.defaultPhoneNumber}</Text>}
-                    {item.defaultEmail && <Text style={style.subheader}>{item.defaultEmail}</Text>}
+                    {item.defaultPhoneNumber && <Text style={styles.subheader}>+{item.defaultPhoneNumber}</Text>}
+                    {item.defaultEmail && <Text style={styles.subheader}>{item.defaultEmail}</Text>}
                 </View>
             ))}
         </View>

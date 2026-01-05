@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, Svg, Circle } from "@react-pdf/renderer";
-import Dot from "../../../components/icons/Dot";
+import Dot from "@/features/viewer/components/icons/Dot";
 
 export default function Experience({ items }) {
-    const style = StyleSheet.create({
+    const styles = StyleSheet.create({
         container: {
             marginBottom: 10,
         },
@@ -27,6 +27,9 @@ export default function Experience({ items }) {
             alignItems: "flex-start",
             gap: 4,
         },
+        dot: {
+            marginTop: 5,
+        },
         listText: {
             flex: 1,
         },
@@ -37,18 +40,18 @@ export default function Experience({ items }) {
 
     return (
         items.map((item, index) => (
-            <View key={item.id} style={[style.container, index === items.length - 1 && style.lastChild]}>
-                <View style={style.header}>
-                    <Text style={style.job}>{item.jobTitle}</Text>
-                    <Text style={style.subheader}>{item.startYear} – {item.endYear}</Text>
+            <View key={item.id} style={[styles.container, index === items.length - 1 && styles.lastChild]}>
+                <View style={styles.header}>
+                    <Text style={styles.job}>{item.jobTitle}</Text>
+                    <Text style={styles.subheader}>{item.startYear} – {item.endYear}</Text>
                 </View>
-                <Text style={style.subheader}>{item.companyName}</Text>
+                <Text style={styles.subheader}>{item.companyName}</Text>
                 {item.bulletType ? (
-                    <View style={style.list}>
+                    <View style={styles.list}>
                         {item.bulletSummary?.map((line, index) => (
-                            <View key={index} style={style.listItem}>
-                                <Dot />
-                                <Text style={style.listText}>{line}</Text>
+                            <View key={index} style={styles.listItem}>
+                                <Dot style={styles.dot} />
+                                <Text style={styles.listText}>{line}</Text>
                             </View>
                         ))}
                     </View>

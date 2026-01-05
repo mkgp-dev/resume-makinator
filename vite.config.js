@@ -1,11 +1,15 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
+import { fileURLToPath } from "url"
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: { buffer: "buffer/" }
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      buffer: "buffer/",
+    },
   },
   optimizeDeps: {
     include: ["buffer"],

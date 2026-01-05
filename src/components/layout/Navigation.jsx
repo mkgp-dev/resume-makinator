@@ -11,7 +11,7 @@ import {
     Cog8ToothIcon,
     ArchiveBoxIcon
 } from "@heroicons/react/24/solid";
-import { usePageStore } from "../../hooks/usePageStore";
+import { usePageHook } from "@/hooks/usePage";
 import clsx from "clsx";
 
 const tabs = [
@@ -29,7 +29,7 @@ const tabs = [
 ];
 
 export default function Navigation({ active }) {
-    const { update } = usePageStore();
+    const { update } = usePageHook();
 
     return (
         <nav className="flex items-center border-b border-slate-700 overflow-x-auto whitespace-nowrap no-scrollbar mt-5">

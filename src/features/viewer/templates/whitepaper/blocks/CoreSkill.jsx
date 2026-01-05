@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 
 export default function CoreSkill({ items }) {
-    const style = StyleSheet.create({
+    const styles = StyleSheet.create({
         row: {
             flexDirection: "row",
             flexWrap: "wrap",
@@ -20,13 +20,13 @@ export default function CoreSkill({ items }) {
     });
 
     return (
-        <View style={style.row}>
+        <View style={styles.row}>
             {items.map((item, index) => (
-                <View key={index} style={style.item}>
+                <View key={index} style={styles.item}>
                     <Text>
-                        <Text style={style.header}>{item.devLanguage}</Text>
+                        <Text style={styles.header}>{item.devLanguage}</Text>
                         <Text> – </Text>
-                        <Text style={style.subheader}>
+                        <Text style={styles.subheader}>
                             {Array.isArray(item.devFramework)
                                 ? item.devFramework.join(", ")
                                 : item.devFramework}

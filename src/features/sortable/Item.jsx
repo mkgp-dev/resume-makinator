@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Bars3Icon, TrashIcon } from "@heroicons/react/24/outline";
-import Button from "../../components/ui/Button";
+import Button from "@/components/ui/Button";
 import clsx from "clsx";
 
 export default function SortableItem({

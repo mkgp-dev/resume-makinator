@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 
 export default function Section({ title, disableBorder, children }) {
-    const style = StyleSheet.create({
+    const styles = StyleSheet.create({
         container: {
             paddingBottom: 4,
             borderBottomWidth: 1,
@@ -20,8 +20,8 @@ export default function Section({ title, disableBorder, children }) {
     });
 
     return (
-        <View style={[style.container, disableBorder && style.lastItem]}>
-            <Text style={style.title}>{title}</Text>
+        <View style={[styles.container, disableBorder && styles.lastItem]}>
+            <Text style={styles.title}>{title}</Text>
             {children}
         </View>
     );

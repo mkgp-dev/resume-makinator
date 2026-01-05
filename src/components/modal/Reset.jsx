@@ -1,9 +1,9 @@
-import { useConfigurationStore } from "../../hooks/useConfigurationStore";
-import Button from "../ui/Button";
-import Modal from "../ui/Modal";
+import { useConfigurationHook } from "@/hooks/useConfiguration";
+import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
 
 export default function ResetModal() {
-    const { reset } = useConfigurationStore();
+    const { reset } = useConfigurationHook();
     const id = "reset-modal";
 
     const handleConfirm = () => {

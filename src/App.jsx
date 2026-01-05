@@ -1,14 +1,14 @@
-import { usePageStore } from "./hooks/usePageStore";
-import Tab from "./components/layout/Tab";
-import Default from "./components/layout/Default";
-import Navigation from "./components/layout/Navigation";
-import Preview from "./features/viewer/Preview";
-import Card from "./components/ui/Card";
-import PrivacyModal from "./components/modal/Privacy";
-import Footer from "./components/layout/Footer";
+import { usePageHook } from "@/hooks/usePage";
+import Tab from "@/components/layout/Tab";
+import Default from "@/components/layout/Default";
+import Navigation from "@/components/layout/Navigation";
+import Preview from "@/features/viewer/Preview";
+import Card from "@/components/ui/Card";
+import PrivacyModal from "@/components/modal/Privacy";
+import Footer from "@/components/layout/Footer";
 
 export default function App() {
-  const { page, hydrate } = usePageStore();
+  const { page, hydrate } = usePageHook();
 
   if (!hydrate) return null;
 

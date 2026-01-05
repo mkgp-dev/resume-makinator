@@ -1,9 +1,9 @@
-import { ArrowRightCircleIcon, CodeBracketIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
-import Button from "../ui/Button";
-import { useDefaultStore } from "../../hooks/useDefaultStore";
+import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import Button from "@/components/ui/Button";
+import { useDefaultHook } from "@/hooks/useDefault";
 
 export default function Default() {
-    const { buttonStart } = useDefaultStore();
+    const { buttonStart } = useDefaultHook();
 
     return (
         <div className="flex items-center justify-center min-h-screen">

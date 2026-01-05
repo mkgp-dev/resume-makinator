@@ -1,23 +1,20 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
-import Dot from "../../../components/icons/Dot";
+import Dot from "@/features/viewer/components/icons/Dot";
 
 export default function SoftSkill({ items }) {
     const styles = StyleSheet.create({
         row: {
             flexDirection: "row",
-            justifyContent: "space-between",
             flexWrap: "wrap",
         },
         item: {
             flexDirection: "row",
-            alignItems: "flex-start",
-            gap: 4,
+            alignItems: "center",
+            gap: 2,
+            marginRight: 10,
         },
-        header: {
-            fontWeight: "semibold",
-        },
-        subheader: {
-            color: "#6F6F7D",
+        dot: {
+            marginTop: 2,
         },
     });
     
@@ -25,7 +22,7 @@ export default function SoftSkill({ items }) {
         <View style={styles.row}>
             {items.map((item, index)=> (
                 <View key={index} style={styles.item}>
-                    <Dot />
+                    <Dot style={styles.dot} />
                     <Text>{item.trim()}</Text>
                 </View>
             ))}
