@@ -1,5 +1,7 @@
-import { View, Text, StyleSheet } from "@react-pdf/renderer"
+import { View, Text, StyleSheet, Link } from "@react-pdf/renderer"
 import Dot from "@/features/viewer/components/icons/Dot"
+import SourceCode from "@/features/viewer/components/icons/SourceCode"
+import Preview from "@/features/viewer/components/icons/Preview"
 import type { ProjectItem, WhitepaperTemplateConfig } from "@/entities/resume/types"
 
 type ProjectProps = {
@@ -24,8 +26,20 @@ export default function Project({ items, config }: ProjectProps) {
         margin: {
             marginLeft: 13,
         },
-        framework: {
+        links: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            fontSize: 9,
+        },
+        linkItem: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+        },
+        linkText: {
             color: "#6F6F7D",
+            textDecoration: "none",
         },
         dot: {
             marginTop: 2,
@@ -46,8 +60,30 @@ export default function Project({ items, config }: ProjectProps) {
                 ) : (
                     <Text style={styles.name}>{item.projectName}</Text>
                 )}
+                {(item.sourceCode || item.preview) && (
+                    <View style={[
+                        styles.links,
+                        config.bulletText ? styles.margin : {}
+                    ]}>
+                        {item.sourceCode && (
+                            <View style={styles.linkItem}>
+                                    <SourceCode color="#6F6F7D" />
+                                <Link src={item.sourceCode} style={styles.linkText}>
+                                    View source
+                                </Link>
+                            </View>
+                        )}
+                        {item.preview && (
+                            <View style={styles.linkItem}>
+                                    <Preview color="#6F6F7D" />
+                                <Link src={item.preview} style={styles.linkText}>
+                                    Preview
+                                </Link>
+                            </View>
+                        )}
+                    </View>
+                )}
                 <View style={config.bulletText ? styles.margin : {}}>
-                    {item.projectFrameworks && <Text style={styles.framework}>{item.projectFrameworks}</Text>}
                     <Text>{item.projectDescription}</Text>
                 </View>
             </View>

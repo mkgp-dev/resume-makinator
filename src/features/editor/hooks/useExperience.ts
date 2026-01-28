@@ -28,7 +28,8 @@ export function useExperienceHook() {
         add("personalProjects", {
             id,
             projectName: "",
-            projectFrameworks: "",
+            sourceCode: "",
+            preview: "",
             projectDescription: "",
         })
 

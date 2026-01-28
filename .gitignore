@@ -25,4 +25,4 @@ dist-ssr
 
 # Personal configuration
 .codex
-TASK.md
+tasks/

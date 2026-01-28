@@ -116,10 +116,11 @@ const isWorkExperienceItem = (value: unknown): value is WorkExperienceItem => (
 
 const isProjectItem = (value: unknown): value is ProjectItem => (
     isPlainObject(value) &&
-    hasKeys(value, ["id", "projectName", "projectFrameworks", "projectDescription"]) &&
+    hasKeys(value, ["id", "projectName", "sourceCode", "preview", "projectDescription"]) &&
     isString(value.id) &&
     isString(value.projectName) &&
-    isString(value.projectFrameworks) &&
+    isString(value.sourceCode) &&
+    isString(value.preview) &&
     isString(value.projectDescription)
 )
 
