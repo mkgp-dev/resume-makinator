@@ -1,6 +1,5 @@
 import { useExperienceHook } from "@/features/editor/hooks/useExperience"
 import Input from "@/shared/ui/Input"
-import MultiSelect from "@/features/multiselect/MultiSelect"
 import Textarea from "@/shared/ui/Textarea"
 import type { ProjectItem } from "@/entities/resume/types"
 
@@ -21,13 +20,20 @@ export default function ProjectForm({ item }: ProjectFormProps) {
                 isStretch={true}
             />
 
-            <MultiSelect
-                label="Framework"
-                mode="framework"
-                value={item.projectFrameworks}
-                placeholder="React"
-                onChange={value => modify("personalProjects", item.id, { projectFrameworks: value })}
-                allowMultiple={false}
+            <Input
+                label="Source code (optional)"
+                value={item.sourceCode}
+                placeholder="https://github.com/username/project"
+                onChange={event => modify("personalProjects", item.id, { sourceCode: event.target.value })}
+                isStretch={true}
+            />
+
+            <Input
+                label="Preview (optional)"
+                value={item.preview}
+                placeholder="https://project-demo.com"
+                onChange={event => modify("personalProjects", item.id, { preview: event.target.value })}
+                isStretch={true}
             />
 
             <div className="mb-1">

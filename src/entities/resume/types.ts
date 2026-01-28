@@ -58,7 +58,8 @@ export type WorkExperienceItem = {
 export type ProjectItem = {
   id: string
   projectName: string
-  projectFrameworks: string
+  sourceCode: string
+  preview: string
   projectDescription: string
 }
 

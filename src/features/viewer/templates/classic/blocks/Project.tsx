@@ -1,5 +1,7 @@
-import { View, Text, StyleSheet } from "@react-pdf/renderer"
+import { View, Text, StyleSheet, Link } from "@react-pdf/renderer"
 import Dot from "@/features/viewer/components/icons/Dot"
+import SourceCode from "@/features/viewer/components/icons/SourceCode"
+import Preview from "@/features/viewer/components/icons/Preview"
 import type { ClassicTemplateConfig, ProjectItem } from "@/entities/resume/types"
 
 type ProjectProps = {
@@ -17,18 +19,34 @@ export default function Project({ items, config }: ProjectProps) {
             alignItems: "center",
         },
         name: {
+            fontSize: 14,
             fontWeight: "bold",
         },
         dot: {
             marginTop: 1,
             marginRight: 4,
         },
-        framework: {
+        links: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 9,
+        },
+        linkItem: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+        },
+        linkText: {
             color: "#6F6F7D",
+            textDecoration: "none",
             fontSize: 10,
         },
         body: {
             marginTop: 2,
+           
+        },
+        leftMargin: {
             marginLeft: config.bulletText ? 10 : 0,
         },
         lastChild: {
@@ -46,8 +64,31 @@ export default function Project({ items, config }: ProjectProps) {
             ) : (
                 <Text style={styles.name}>{item.projectName}</Text>
             )}
-            <View style={styles.body}>
-                {item.projectFrameworks && <Text style={styles.framework}>{item.projectFrameworks}</Text>}
+            {(item.sourceCode || item.preview) && (
+                <View style={[
+                    styles.links, styles.leftMargin
+                ]}>
+                    {item.sourceCode && (
+                        <View style={styles.linkItem}>
+                            <SourceCode color="#6F6F7D" />
+                            <Link src={item.sourceCode} style={styles.linkText}>
+                                View source
+                            </Link>
+                        </View>
+                    )}
+                    {item.preview && (
+                        <View style={styles.linkItem}>
+                            <Preview color="#6F6F7D" />
+                            <Link src={item.preview} style={styles.linkText}>
+                                Preview
+                            </Link>
+                        </View>
+                    )}
+                </View>
+            )}
+            <View style={[
+                styles.body, styles.leftMargin
+            ]}>
                 <Text>{item.projectDescription}</Text>
             </View>
         </View>
