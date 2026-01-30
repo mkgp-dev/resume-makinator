@@ -9,11 +9,9 @@ type AchievementProps = {
 
 export default function Achievement({ items, config, baseFontSize }: AchievementProps) {
     const bulletIndent = Math.round(baseFontSize * 0.6) + 3
+    const itemSpacing = config.bulletText ? 0 : 8
 
     const styles = StyleSheet.create({
-        container: {
-            marginBottom: 8,
-        },
         row: {
             flexDirection: "row",
             alignItems: "flex-start",
@@ -41,7 +39,13 @@ export default function Achievement({ items, config, baseFontSize }: Achievement
 
     return (
         items.map((item, index) => (
-            <View key={item.id} style={index === items.length - 1 ? [styles.container, styles.lastChild] : styles.container}>
+            <View
+                key={item.id}
+                style={[
+                    { marginBottom: itemSpacing },
+                    index === items.length - 1 ? styles.lastChild : {},
+                ]}
+            >
                 <View style={styles.header}>
                     {config.bulletText ? (
                         <View style={styles.row}>
