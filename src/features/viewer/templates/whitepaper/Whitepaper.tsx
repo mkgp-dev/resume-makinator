@@ -10,95 +10,97 @@ import Reference from "@/features/viewer/templates/whitepaper/blocks/Reference"
 import SoftSkill from "@/features/viewer/templates/whitepaper/blocks/SoftSkill"
 import Achievement from "@/features/viewer/templates/whitepaper/blocks/Achievement"
 import Language from "@/features/viewer/templates/whitepaper/blocks/Language"
-import type { ResumePreviewData } from "@/entities/resume/types"
+import { WHITEPAPER_SECTION_ORDER_DEFAULT } from "@/entities/resume/constants/whitepaperSections"
+import type { ReactNode } from "react"
+import type { ResumePreviewData, WhitepaperSectionKey } from "@/entities/resume/types"
 
 type WhitepaperProps = {
     data: ResumePreviewData
 }
 
 export default function Whitepaper({ data }: WhitepaperProps) {
+    const baseFontSize = data.configuration.fontSize
     const style = StyleSheet.create({
         page: {
             fontFamily: data.configuration.fontStyle,
-            fontSize: data.configuration.fontSize,
+            fontSize: baseFontSize,
             gap: data.template["whitepaper"].blockSpace,
         },
     })
 
-    const sections = [
-        {
-            key: "summary",
-            show: Boolean(data.personalDetails.summary),
+    const sectionOrder = data.template.whitepaper.sectionOrder?.length
+        ? data.template.whitepaper.sectionOrder
+        : WHITEPAPER_SECTION_ORDER_DEFAULT
+
+    const sections: Record<WhitepaperSectionKey, { title: string, show: boolean, content: ReactNode }> = {
+        summary: {
             title: "About me",
+            show: data.enableInRender.summary && Boolean(data.personalDetails.summary),
             content: <Text>{data.personalDetails.summary}</Text>,
         },
-        {
-            key: "coreSkills",
-            show: data.enableInRender.coreSkills && data.coreSkills.length > 0,
+        coreSkills: {
             title: "Core skills",
+            show: data.enableInRender.coreSkills && data.coreSkills.length > 0,
             content: <CoreSkill items={data.coreSkills} />,
         },
-        {
-            key: "workExperiences",
-            show: data.enableInRender.workExperiences && data.workExperiences.length > 0,
+        workExperiences: {
             title: "Experience",
-            content: <Experience items={data.workExperiences} />,
+            show: data.enableInRender.workExperiences && data.workExperiences.length > 0,
+            content: <Experience items={data.workExperiences} baseFontSize={baseFontSize} />,
         },
-        {
-            key: "personalProjects",
-            show: data.enableInRender.personalProjects && data.personalProjects.length > 0,
+        personalProjects: {
             title: "Personal Projects",
-            content: <Project items={data.personalProjects} config={data.template["whitepaper"]} />,
+            show: data.enableInRender.personalProjects && data.personalProjects.length > 0,
+            content: <Project items={data.personalProjects} config={data.template["whitepaper"]} baseFontSize={baseFontSize} />,
         },
-        {
-            key: "certificates",
-            show: data.enableInRender.certificates && data.certificates.length > 0,
+        certificates: {
             title: "Certificates",
-            content: <Certificate items={data.certificates} config={data.template["whitepaper"]} />,
+            show: data.enableInRender.certificates && data.certificates.length > 0,
+            content: <Certificate items={data.certificates} config={data.template["whitepaper"]} baseFontSize={baseFontSize} />,
         },
-        {
-            key: "achievements",
-            show: data.enableInRender.achievements && data.achievements.length > 0,
+        achievements: {
             title: "Achievements",
-            content: <Achievement items={data.achievements} config={data.template["whitepaper"]} />,
+            show: data.enableInRender.achievements && data.achievements.length > 0,
+            content: <Achievement items={data.achievements} config={data.template["whitepaper"]} baseFontSize={baseFontSize} />,
         },
-        {
-            key: "softSkills",
-            show: data.enableInRender.softSkills && data.softSkills.length > 0,
+        softSkills: {
             title: "Soft Skills",
+            show: data.enableInRender.softSkills && data.softSkills.length > 0,
             content: <SoftSkill items={data.softSkills} />,
         },
-        {
-            key: "education",
-            show: data.enableInRender.education && data.education.length > 0,
+        education: {
             title: "Education",
+            show: data.enableInRender.education && data.education.length > 0,
             content: <Education items={data.education} />,
         },
-        {
-            key: "knownLanguages",
-            show: data.enableInRender.language && data.personalDetails.knownLanguages.length > 0,
+        knownLanguages: {
             title: "Languages",
+            show: data.enableInRender.language && data.personalDetails.knownLanguages.length > 0,
             content: <Language items={data.personalDetails.knownLanguages} />,
         },
-        {
-            key: "references",
-            show: data.enableInRender.references && data.references.length > 0,
+        references: {
             title: "References",
+            show: data.enableInRender.references && data.references.length > 0,
             content: <Reference items={data.references} />,
         },
-    ]
+    }
 
-    const visibleSections = sections.filter(section => section.show)
+    const visibleSections = sectionOrder
+        .map((key) => ({ key, ...sections[key] }))
+        .filter((section) => section.show)
 
     return (
         <View style={style.page}>
-            {data.personalDetails.fullName && <Header data={data.personalDetails} config={data.template["whitepaper"]} />}
+            {data.personalDetails.fullName ? (
+                <Header data={data.personalDetails} config={data.template["whitepaper"]} baseFontSize={baseFontSize} />
+            ) : null}
 
             {visibleSections.map((section, index) => (
                 <Section
                     key={section.key}
                     title={section.title}
                     disableBorder={index === visibleSections.length - 1}
+                    baseFontSize={baseFontSize}
                 >
                     {section.content}
                 </Section>

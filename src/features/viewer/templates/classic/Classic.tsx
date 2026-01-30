@@ -38,7 +38,7 @@ export default function Classic({ data }: ClassicProps) {
     const sections = [
         {
             key: "summary",
-            show: Boolean(data.personalDetails.summary),
+            show: data.enableInRender.summary && Boolean(data.personalDetails.summary),
             title: "Profile",
             content: <Text>{data.personalDetails.summary}</Text>,
         },

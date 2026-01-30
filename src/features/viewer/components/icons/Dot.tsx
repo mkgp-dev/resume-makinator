@@ -14,7 +14,7 @@ export default function Dot({ isLarge = false, style }: DotProps) {
 
     return (
         <Svg style={style ? [styles, style] : styles} viewBox="0 0 128 128">
-            <Circle cx="50" cy="50" r="45" fill="#000000" />
+            <Circle cx="64" cy="64" r="45" fill="#000000" />
         </Svg>
     )
 }

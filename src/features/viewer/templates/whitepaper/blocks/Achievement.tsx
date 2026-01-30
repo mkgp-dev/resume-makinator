@@ -1,20 +1,23 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer"
-import Dot from "@/features/viewer/components/icons/Dot"
 import type { AchievementItem, WhitepaperTemplateConfig } from "@/entities/resume/types"
 
 type AchievementProps = {
     items: AchievementItem[]
     config: WhitepaperTemplateConfig
+    baseFontSize: number
 }
 
-export default function Achievement({ items, config }: AchievementProps) {
+export default function Achievement({ items, config, baseFontSize }: AchievementProps) {
+    const bulletIndent = Math.round(baseFontSize * 0.6) + 3
+
     const styles = StyleSheet.create({
         container: {
             marginBottom: 8,
         },
         row: {
             flexDirection: "row",
-            gap: 3,
+            alignItems: "flex-start",
+            gap: 0,
         },
         name: {
             fontWeight: "semibold",
@@ -29,10 +32,7 @@ export default function Achievement({ items, config }: AchievementProps) {
             color: "#6F6F7D",
         },
         margin: {
-            marginLeft: 9,
-        },
-        dot: {
-            marginTop: 2,
+            marginLeft: bulletIndent,
         },
         lastChild: {
             marginBottom: 0,
@@ -45,8 +45,7 @@ export default function Achievement({ items, config }: AchievementProps) {
                 <View style={styles.header}>
                     {config.bulletText ? (
                         <View style={styles.row}>
-                            <Dot style={styles.dot} />
-                            <Text style={styles.name}>{item.achievementName}</Text>
+                            <Text style={styles.name}>• {item.achievementName}</Text>
                         </View>
                     ) : (
                         <Text style={styles.name}>{item.achievementName}</Text>

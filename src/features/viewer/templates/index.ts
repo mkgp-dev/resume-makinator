@@ -27,7 +27,7 @@ export const TEMPLATE_REGISTRY: Record<TemplateId, TemplateEntry> = {
 export const templateOptions = Object.values(TEMPLATE_REGISTRY).map(template => ({
     name: template.label,
     value: template.id,
-}))
+})).filter(option => option.value !== "classic")
 
 export const getTemplateComponent = (templateId: TemplateId): TemplateComponent =>
     TEMPLATE_REGISTRY[templateId]?.Component || TEMPLATE_REGISTRY.whitepaper.Component

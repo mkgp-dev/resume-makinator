@@ -6,57 +6,57 @@ import Github from "@/features/viewer/components/icons/Github"
 import Linkedin from "@/features/viewer/components/icons/Linkedin"
 import type { PersonalDetails, WhitepaperTemplateConfig } from "@/entities/resume/types"
 
-const styles = StyleSheet.create({
-    container: {
-        paddingBottom: 4,
-        borderBottomWidth: 1,
-        borderBottomColor: "#9E9EA8",
-    },
-    headerRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "flex-end",
-    },
-    left: {
-        flex: 1,
-    },
-    name: {
-        fontSize: 22,
-        fontWeight: "bold",
-        color: "#000000",
-    },
-    title: {
-        fontSize: 14,
-        marginTop: -5,
-    },
-    row: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 14,
-        marginTop: 2,
-    },
-    column: {
-        flexDirection: "column",
-        gap: 2,
-        marginTop: 2,
-    },
-    item: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 4,
-    },
-    link: {
-        textDecoration: "none",
-        color: "#000000",
-    }
-})
-
 type HeaderProps = {
     data: PersonalDetails
     config: WhitepaperTemplateConfig
+    baseFontSize: number
 }
 
-export default function Header({ data, config }: HeaderProps) {
+export default function Header({ data, config, baseFontSize }: HeaderProps) {
+    const styles = StyleSheet.create({
+        container: {
+            paddingBottom: 4,
+            borderBottomWidth: 1,
+            borderBottomColor: "#9E9EA8",
+        },
+        headerRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+        },
+        left: {
+            flex: 1,
+        },
+        name: {
+            fontSize: baseFontSize + 10,
+            fontWeight: "bold",
+            color: "#000000",
+        },
+        title: {
+            fontSize: baseFontSize + 2,
+            marginTop: -5,
+        },
+        row: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 14,
+            marginTop: 2,
+        },
+        column: {
+            flexDirection: "column",
+            gap: 2,
+            marginTop: 2,
+        },
+        item: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+        },
+        link: {
+            textDecoration: "none",
+            color: "#000000",
+        },
+    })
 
     return (
         <View style={styles.container}>
