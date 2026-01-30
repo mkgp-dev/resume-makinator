@@ -8,13 +8,13 @@ export default function PrivacyModal() {
     const dialogRef = useRef<HTMLDialogElement | null>(null)
 
     const hydrate = useResumeStore(state => state.hasHydrated)
+    const page = useResumeStore(state => state.activePage)
     const privacy = useResumeStore(state => state.hasAcknowledgedPrivacy)
     const set = useResumeStore(state => state.setPrivacy)
 
     useEffect(() => {
-        if (!hydrate) return
-        if (!privacy && dialogRef.current) dialogRef.current.showModal()
-    }, [hydrate, privacy])
+        if (!privacy && dialogRef.current && (hydrate || page)) dialogRef.current.showModal()
+    }, [hydrate, privacy, page])
 
     const handleCancel = (event: FormEvent<HTMLDialogElement>) => event.preventDefault()
 

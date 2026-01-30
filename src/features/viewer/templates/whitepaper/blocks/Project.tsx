@@ -12,12 +12,9 @@ type ProjectProps = {
 export default function Project({ items, config, baseFontSize }: ProjectProps) {
     const bulletIndent = Math.round(baseFontSize * 0.6) + 4
     const linkFontSize = Math.max(baseFontSize - 3, 8)
-    const itemSpacing = config.bulletText ? 0 : 8
+    const itemSpacing = 0
 
     const styles = StyleSheet.create({
-        container: {
-            marginBottom: itemSpacing,
-        },
         row: {
             flexDirection: "row",
             alignItems: "flex-start",
@@ -52,7 +49,13 @@ export default function Project({ items, config, baseFontSize }: ProjectProps) {
 
     return (
         items.map((item, index) => (
-            <View key={item.id} style={index === items.length - 1 ? [styles.container, styles.lastChild] : styles.container}>
+            <View
+                key={item.id}
+                style={[
+                    { marginBottom: itemSpacing },
+                    index === items.length - 1 ? styles.lastChild : {},
+                ]}
+            >
                 {config.bulletText ? (
                     <View style={styles.row}>
                         <Text style={styles.name}>• {item.projectName}</Text>

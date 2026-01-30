@@ -1,18 +1,51 @@
 import { usePageHook } from "@/features/editor/hooks/usePage"
-import { Suspense, lazy } from "react"
+import { Suspense, lazy, useEffect, useState } from "react"
 import Tab from "@/widgets/layout/Tab"
 import Default from "@/widgets/layout/Default"
 import Navigation from "@/widgets/layout/Navigation"
 import Card from "@/shared/ui/Card"
 import PrivacyModal from "@/widgets/modals/Privacy"
 import Footer from "@/widgets/layout/Footer"
+import localforage from "@/shared/lib/localForage"
 
 const Preview = lazy(() => import("@/features/viewer/Preview"))
 
 export default function App() {
   const { page, hydrate } = usePageHook()
+  const [storageStatus, setStorageStatus] = useState<"checking" | "empty" | "hasData">("checking")
 
-  if (!hydrate) return null
+  useEffect(() => {
+    let isMounted = true
+    localforage.getItem("resumeData")
+      .then((value) => {
+        if (!isMounted) return
+        setStorageStatus(value ? "hasData" : "empty")
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setStorageStatus("empty")
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  if (storageStatus === "checking") {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-primary" />
+      </div>
+    )
+  }
+
+  if (storageStatus === "hasData" && !hydrate) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-primary" />
+      </div>
+    )
+  }
 
   if (!page) return (<Default />)
 
@@ -30,7 +63,7 @@ export default function App() {
             <Suspense
               fallback={
                 <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                  Loading preview...
+                  L<span className="loading loading-spinner loading-lg text-primary" />
                 </div>
               }
             >
