@@ -6,6 +6,18 @@ export type PageSize = "A4" | "LETTER"
 
 export type FontStyle = "Lora" | "Playfair-Display" | "Helvetica" | "Montserrat"
 
+export type WhitepaperSectionKey =
+  | "summary"
+  | "coreSkills"
+  | "workExperiences"
+  | "personalProjects"
+  | "certificates"
+  | "achievements"
+  | "softSkills"
+  | "education"
+  | "knownLanguages"
+  | "references"
+
 export type PersonalDetails = {
   fullName: string
   jobTitle: string
@@ -80,6 +92,7 @@ export type AchievementItem = {
 }
 
 export type RenderConfig = {
+  summary: boolean
   workExperiences: boolean
   personalProjects: boolean
   certificates: boolean
@@ -104,6 +117,7 @@ export type WhitepaperTemplateConfig = {
   pictureSize: number
   bulletText: boolean
   inlineInformation: boolean
+  sectionOrder: WhitepaperSectionKey[]
 }
 
 export type ClassicTemplateConfig = {

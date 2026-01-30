@@ -43,6 +43,34 @@ const toNumber = (value: unknown) => {
 
 const isNumberLike = (value: unknown) => Number.isFinite(toNumber(value))
 
+const DEFAULT_RENDER_CONFIG: RenderConfig = {
+    summary: true,
+    workExperiences: false,
+    personalProjects: false,
+    certificates: false,
+    education: false,
+    coreSkills: false,
+    references: false,
+    softSkills: false,
+    achievements: false,
+    language: false,
+}
+
+const normalizeRenderConfig = (value: unknown): RenderConfig | null => {
+    if (!isPlainObject(value)) return null
+
+    const result: RenderConfig = { ...DEFAULT_RENDER_CONFIG }
+
+    for (const key of RENDER_SECTION_KEYS) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) {
+            if (!isBoolean(value[key])) return null
+            result[key as keyof RenderConfig] = value[key] as boolean
+        }
+    }
+
+    return result
+}
+
 const isPersonalDetails = (value: unknown): value is PersonalDetails => (
     isPlainObject(value) &&
     hasKeys(value, [
@@ -154,12 +182,6 @@ const isConfiguration = (value: unknown): value is Configuration => (
     isString(value.pageSize)
 )
 
-const isRenderConfig = (value: unknown): value is RenderConfig => (
-    isPlainObject(value) &&
-    hasKeys(value, RENDER_SECTION_KEYS) &&
-    RENDER_SECTION_KEYS.every((key) => isBoolean(value[key]))
-)
-
 export const validateImportData = (data: unknown): ResumeImportData | null => {
     if (!isPlainObject(data)) return null
     if (!hasKeys(data, REQUIRED_DATA_KEYS)) return null
@@ -173,7 +195,8 @@ export const validateImportData = (data: unknown): ResumeImportData | null => {
     if (!Array.isArray(data.certificates) || !data.certificates.every(isCertificateItem)) return null
     if (!Array.isArray(data.achievements) || !data.achievements.every(isAchievementItem)) return null
     if (!isConfiguration(data.configuration)) return null
-    if (!isRenderConfig(data.enableInRender)) return null
+    const renderConfig = normalizeRenderConfig(data.enableInRender)
+    if (!renderConfig) return null
     if (data.activePage !== undefined && (!isString(data.activePage) || !isActivePage(data.activePage))) return null
 
     const sanitized: ResumeImportData = {
@@ -191,7 +214,7 @@ export const validateImportData = (data: unknown): ResumeImportData | null => {
             template: normalizeTemplateId(data.configuration.template),
             fontSize: toNumber(data.configuration.fontSize),
         },
-        enableInRender: data.enableInRender,
+        enableInRender: renderConfig,
     }
 
     if (isString(data.activePage) && isActivePage(data.activePage)) {

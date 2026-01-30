@@ -1,21 +1,24 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer"
-import Dot from "@/features/viewer/components/icons/Dot"
 import type { CertificateItem, WhitepaperTemplateConfig } from "@/entities/resume/types"
 
 type CertificateProps = {
     items: CertificateItem[]
     config: WhitepaperTemplateConfig
+    baseFontSize: number
 }
 
-export default function Certificate({ items, config }: CertificateProps) {
+export default function Certificate({ items, config, baseFontSize }: CertificateProps) {
+    const bulletIndent = Math.round(baseFontSize * 0.6) + 3
+    const itemSpacing = config.bulletText ? 0 : 8
+
     const styles = StyleSheet.create({
         container: {
-            marginBottom: 8,
+            marginBottom: itemSpacing,
         },
         row: {
             flexDirection: "row",
-            alignItems: "center",
-            gap: 3,
+            alignItems: "flex-start",
+            gap: 0,
         },
         name: {
             fontWeight: "semibold",
@@ -30,10 +33,7 @@ export default function Certificate({ items, config }: CertificateProps) {
             color: "#6F6F7D",
         },
         margin: {
-            marginLeft: 9,
-        },
-        dot: {
-            marginTop: 2,
+            marginLeft: bulletIndent,
         },
         lastChild: {
             marginBottom: 0,
@@ -46,8 +46,7 @@ export default function Certificate({ items, config }: CertificateProps) {
                 <View style={styles.header}>
                     {config.bulletText ? (
                         <View style={styles.row}>
-                            <Dot style={styles.dot} />
-                            <Text style={styles.name}>{item.certificateName}</Text>
+                            <Text style={styles.name}>• {item.certificateName}</Text>
                         </View>
                     ) : (
                         <Text style={styles.name}>{item.certificateName}</Text>

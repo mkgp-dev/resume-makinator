@@ -9,7 +9,11 @@ export const SECTION_KEYS = {
     achievements: "achievements",
 }
 
-export const RENDER_SECTION_KEYS = Object.values(SECTION_KEYS)
+export const RENDER_SECTION_KEYS = [
+    "summary",
+    ...Object.values(SECTION_KEYS),
+    "language",
+]
 
 export const REQUIRED_DATA_KEYS = [
     "personalDetails",

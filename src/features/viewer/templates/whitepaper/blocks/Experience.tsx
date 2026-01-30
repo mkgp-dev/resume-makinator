@@ -1,18 +1,20 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer"
-import Dot from "@/features/viewer/components/icons/Dot"
 import type { WorkExperienceItem } from "@/entities/resume/types"
 
 type ExperienceProps = {
     items: WorkExperienceItem[]
+    baseFontSize: number
 }
 
-export default function Experience({ items }: ExperienceProps) {
+export default function Experience({ items, baseFontSize }: ExperienceProps) {
+    const bulletIndent = Math.round(baseFontSize * 0.6) + 4
+
     const styles = StyleSheet.create({
         container: {
             marginBottom: 10,
         },
         job: {
-            fontSize: 14,
+            fontSize: baseFontSize + 2,
             fontWeight: "medium",
         },
         header: {
@@ -29,11 +31,11 @@ export default function Experience({ items }: ExperienceProps) {
         },
         listItem: {
             flexDirection: "row",
-            alignItems: "flex-start",
-            gap: 4,
+            gap: 2,
         },
-        dot: {
-            marginTop: 5,
+        bullet: {
+            width: bulletIndent,
+            textAlign: "center",
         },
         listText: {
             flex: 1,
@@ -53,12 +55,14 @@ export default function Experience({ items }: ExperienceProps) {
                 <Text style={styles.subheader}>{item.companyName}</Text>
                 {item.bulletType ? (
                     <View style={styles.list}>
-                        {item.bulletSummary?.map((line, index) => (
-                            <View key={index} style={styles.listItem}>
-                                <Dot style={styles.dot} />
-                                <Text style={styles.listText}>{line}</Text>
-                            </View>
-                        ))}
+                        {item.bulletSummary
+                            ?.filter(line => line.trim().length > 0)
+                            .map((line, index) => (
+                                <View key={index} style={styles.listItem}>
+                                    <Text style={styles.bullet}>•</Text>
+                                    <Text style={styles.listText}>{line}</Text>
+                                </View>
+                            ))}
                     </View>
                 ) : (
                     <Text>{item.briefSummary}</Text>

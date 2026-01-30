@@ -1,11 +1,13 @@
 import { useConfigurationHook } from "@/features/editor/hooks/useConfiguration"
 import Input from "@/shared/ui/Input"
 import Select from "@/shared/ui/Select"
-import Toggle from "@/shared/ui/Toggle"
+import WhitepaperSectionOrder from "@/features/editor/panels/WhitepaperSectionOrder"
+import { normalizeTemplateId } from "@/entities/resume/validation/template"
 import type { Configuration } from "@/entities/resume/types"
 
 export default function PagePanel() {
-    const { config, render, modify, toggle, updateNumberConfig } = useConfigurationHook()
+    const { config, modify, updateNumberConfig } = useConfigurationHook()
+    const activeTemplateId = normalizeTemplateId(config.template)
 
     const pageSize = [
         { name: "A4", value: "A4" },
@@ -19,20 +21,8 @@ export default function PagePanel() {
         { name: "Montserrat", value: "Montserrat" },
     ]
 
-    const renderBlock = [
-        { label: "Work experience", isChecked: render.workExperiences, onChange: () => toggle("workExperiences") },
-        { label: "Personal project", isChecked: render.personalProjects, onChange: () => toggle("personalProjects") },
-        { label: "Certificate", isChecked: render.certificates, onChange: () => toggle("certificates") },
-        { label: "Achievement", isChecked: render.achievements, onChange: () => toggle("achievements") },
-        { label: "Education", isChecked: render.education, onChange: () => toggle("education") },
-        { label: "Soft skill", isChecked: render.softSkills, onChange: () => toggle("softSkills") },
-        { label: "Core skill", isChecked: render.coreSkills, onChange: () => toggle("coreSkills") },
-        { label: "Reference", isChecked: render.references, onChange: () => toggle("references") },
-        { label: "Languages", isChecked: render.language, onChange: () => toggle("language") },
-    ]
-
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
+        <div className="flex flex-col gap-4">
             <div className="flex flex-col">
                 <Select
                     label="Paper size"
@@ -59,7 +49,7 @@ export default function PagePanel() {
             </div>
 
             <div className="flex flex-col">
-                <Toggle header="Modify components" lists={renderBlock} />
+                {activeTemplateId === "whitepaper" ? <WhitepaperSectionOrder /> : null}
             </div>
         </div>
     )

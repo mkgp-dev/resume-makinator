@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Link } from "@react-pdf/renderer"
-import Dot from "@/features/viewer/components/icons/Dot"
 import SourceCode from "@/features/viewer/components/icons/SourceCode"
 import Preview from "@/features/viewer/components/icons/Preview"
 import type { ProjectItem, WhitepaperTemplateConfig } from "@/entities/resume/types"
@@ -7,30 +6,34 @@ import type { ProjectItem, WhitepaperTemplateConfig } from "@/entities/resume/ty
 type ProjectProps = {
     items: ProjectItem[]
     config: WhitepaperTemplateConfig
+    baseFontSize: number
 }
 
-export default function Project({ items, config }: ProjectProps) {
+export default function Project({ items, config, baseFontSize }: ProjectProps) {
+    const bulletIndent = Math.round(baseFontSize * 0.6) + 4
+    const linkFontSize = Math.max(baseFontSize - 3, 8)
+    const itemSpacing = config.bulletText ? 0 : 8
+
     const styles = StyleSheet.create({
         container: {
-            marginBottom: 8,
+            marginBottom: itemSpacing,
         },
         row: {
             flexDirection: "row",
-            alignItems: "center",
-            gap: 4,
+            alignItems: "flex-start",
+            gap: 0,
         },
         name: {
-            fontSize: 14,
+            fontSize: baseFontSize + 2,
             fontWeight: "medium",
         },
         margin: {
-            marginLeft: 13,
+            marginLeft: bulletIndent,
         },
         links: {
             flexDirection: "row",
             alignItems: "center",
             gap: 10,
-            fontSize: 9,
         },
         linkItem: {
             flexDirection: "row",
@@ -38,11 +41,9 @@ export default function Project({ items, config }: ProjectProps) {
             gap: 4,
         },
         linkText: {
+            fontSize: linkFontSize,
             color: "#6F6F7D",
             textDecoration: "none",
-        },
-        dot: {
-            marginTop: 2,
         },
         lastChild: {
             marginBottom: 0,
@@ -54,8 +55,7 @@ export default function Project({ items, config }: ProjectProps) {
             <View key={item.id} style={index === items.length - 1 ? [styles.container, styles.lastChild] : styles.container}>
                 {config.bulletText ? (
                     <View style={styles.row}>
-                        <Dot isLarge={true} style={styles.dot} />
-                        <Text style={styles.name}>{item.projectName}</Text>
+                        <Text style={styles.name}>• {item.projectName}</Text>
                     </View>
                 ) : (
                     <Text style={styles.name}>{item.projectName}</Text>

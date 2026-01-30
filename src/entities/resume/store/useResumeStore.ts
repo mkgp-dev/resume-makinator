@@ -13,6 +13,7 @@ import type {
     SectionItemMap,
 } from "@/entities/resume/types"
 import type { ActivePage } from "@/app/navigation"
+import { WHITEPAPER_SECTION_ORDER_DEFAULT } from "@/entities/resume/constants/whitepaperSections"
 
 export type ResumeStore = ResumeData & {
     hasHydrated: boolean
@@ -74,6 +75,7 @@ const INITIAL_STATE: ResumeData & {
         pageSize: "A4",
     },
     enableInRender: {
+        summary: true,
         workExperiences: false,
         personalProjects: false,
         certificates: false,
@@ -91,6 +93,7 @@ const INITIAL_STATE: ResumeData & {
             pictureSize: 100,
             bulletText: false,
             inlineInformation: true,
+            sectionOrder: WHITEPAPER_SECTION_ORDER_DEFAULT,
         },
         classic: {
             blockSpace: 12,
@@ -131,6 +134,42 @@ export const useResumeStore = create<ResumeStore>()(
         {
             name: "resumeData",
             storage: createJSONStorage(() => localforage),
+            merge: (persistedState, currentState) => {
+                const state = persistedState as Partial<ResumeStore>
+                return {
+                    ...currentState,
+                    ...state,
+                    personalDetails: state.personalDetails || currentState.personalDetails,
+                    education: state.education || currentState.education,
+                    references: state.references || currentState.references,
+                    softSkills: state.softSkills || currentState.softSkills,
+                    coreSkills: state.coreSkills || currentState.coreSkills,
+                    workExperiences: state.workExperiences || currentState.workExperiences,
+                    personalProjects: state.personalProjects || currentState.personalProjects,
+                    certificates: state.certificates || currentState.certificates,
+                    achievements: state.achievements || currentState.achievements,
+                    configuration: {
+                        ...currentState.configuration,
+                        ...(state.configuration || {}),
+                    },
+                    enableInRender: {
+                        ...currentState.enableInRender,
+                        ...(state.enableInRender || {}),
+                    },
+                    template: {
+                        ...currentState.template,
+                        ...(state.template || {}),
+                        whitepaper: {
+                            ...currentState.template.whitepaper,
+                            ...(state.template?.whitepaper || {}),
+                        },
+                        classic: {
+                            ...currentState.template.classic,
+                            ...(state.template?.classic || {}),
+                        },
+                    },
+                }
+            },
             onRehydrateStorage: () => (state) => {
                 state?.setHasHydrated?.()
             },

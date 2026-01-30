@@ -4,10 +4,11 @@ import type { ReactNode } from "react"
 type SectionProps = {
     title: string
     disableBorder?: boolean
+    baseFontSize: number
     children: ReactNode
 }
 
-export default function Section({ title, disableBorder, children }: SectionProps) {
+export default function Section({ title, disableBorder, baseFontSize, children }: SectionProps) {
     const styles = StyleSheet.create({
         container: {
             paddingBottom: 4,
@@ -15,7 +16,7 @@ export default function Section({ title, disableBorder, children }: SectionProps
             borderBottomColor: "#9E9EA8",
         },
         title: {
-            fontSize: 16,
+            fontSize: baseFontSize + 4,
             fontWeight: "bold",
             textTransform: "uppercase",
         },
