@@ -70,9 +70,11 @@ export type WorkExperienceItem = {
 export type ProjectItem = {
   id: string
   projectName: string
-  sourceCode: string
+  projectSubtitle: string
   preview: string
-  projectDescription: string
+  briefSummary: string
+  bulletType: boolean
+  bulletSummary: string[]
 }
 
 export type CertificateItem = {
@@ -163,6 +165,6 @@ export type ResumeData = {
 
 export type ResumePreviewData = Omit<ResumeData, "activePage">
 
-export type ResumeImportData = Omit<ResumeData, "template" | "activePage"> & {
+export type ResumeImportData = Omit<ResumeData, "activePage"> & {
   activePage?: ActivePage
 }

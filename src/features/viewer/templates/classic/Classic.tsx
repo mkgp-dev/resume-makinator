@@ -76,7 +76,7 @@ export default function Classic({ data }: ClassicProps) {
             key: "personalProjects",
             show: data.enableInRender.personalProjects && data.personalProjects.length > 0,
             title: "Projects",
-            content: <Project items={data.personalProjects} config={templateConfig} />,
+            content: <Project items={data.personalProjects} />,
         },
         {
             key: "certificates",

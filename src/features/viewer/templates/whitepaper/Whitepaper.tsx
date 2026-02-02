@@ -51,7 +51,7 @@ export default function Whitepaper({ data }: WhitepaperProps) {
         personalProjects: {
             title: "Personal Projects",
             show: data.enableInRender.personalProjects && data.personalProjects.length > 0,
-            content: <Project items={data.personalProjects} config={data.template["whitepaper"]} baseFontSize={baseFontSize} />,
+            content: <Project items={data.personalProjects} baseFontSize={baseFontSize} />,
         },
         certificates: {
             title: "Certificates",

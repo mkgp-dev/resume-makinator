@@ -1,8 +1,10 @@
 import { REQUIRED_DATA_KEYS, RENDER_SECTION_KEYS } from "@/entities/resume/constants/sectionKeys"
+import { WHITEPAPER_SECTION_ORDER_DEFAULT } from "@/entities/resume/constants/whitepaperSections"
 import { normalizeTemplateId } from "@/entities/resume/validation/template"
 import type {
     AchievementItem,
     CertificateItem,
+    ClassicTemplateConfig,
     Configuration,
     CoreSkillItem,
     EducationItem,
@@ -11,7 +13,10 @@ import type {
     ReferenceItem,
     RenderConfig,
     ResumeImportData,
+    TemplateConfig,
     WorkExperienceItem,
+    WhitepaperSectionKey,
+    WhitepaperTemplateConfig,
 } from "@/entities/resume/types"
 import { isActivePage } from "@/app/navigation"
 
@@ -34,6 +39,7 @@ const hasKeys = (value: UnknownRecord, keys: string[]) => keys.every((key) => Ob
 const isImageDataUrl = (value: string) => !value || value.startsWith("data:image/")
 const isShortString = (value: unknown, max: number): value is string =>
     isString(value) && value.length <= max
+const toString = (value: unknown, fallback = "") => (isString(value) ? value : fallback)
 
 const toNumber = (value: unknown) => {
     if (typeof value === "number") return value
@@ -42,6 +48,25 @@ const toNumber = (value: unknown) => {
 }
 
 const isNumberLike = (value: unknown) => Number.isFinite(toNumber(value))
+const toPositiveNumber = (value: unknown, fallback: number) => {
+    const parsed = toNumber(value)
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
+
+const DEFAULT_TEMPLATE_CONFIG: TemplateConfig = {
+    whitepaper: {
+        blockSpace: 12,
+        enablePicture: false,
+        pictureSize: 100,
+        bulletText: false,
+        inlineInformation: true,
+        sectionOrder: WHITEPAPER_SECTION_ORDER_DEFAULT,
+    },
+    classic: {
+        blockSpace: 12,
+        bulletText: true,
+    },
+}
 
 const DEFAULT_RENDER_CONFIG: RenderConfig = {
     summary: true,
@@ -69,6 +94,50 @@ const normalizeRenderConfig = (value: unknown): RenderConfig | null => {
     }
 
     return result
+}
+
+const normalizeWhitepaperSectionOrder = (value: unknown): WhitepaperSectionKey[] => {
+    if (!Array.isArray(value)) return DEFAULT_TEMPLATE_CONFIG.whitepaper.sectionOrder
+    const keys = value.filter(isString)
+    const allowed = new Set(WHITEPAPER_SECTION_ORDER_DEFAULT)
+    if (keys.length !== value.length || !keys.every(key => allowed.has(key as WhitepaperSectionKey))) {
+        return DEFAULT_TEMPLATE_CONFIG.whitepaper.sectionOrder
+    }
+
+    return keys as WhitepaperSectionKey[]
+}
+
+const normalizeWhitepaperTemplate = (value: unknown): WhitepaperTemplateConfig => {
+    if (!isPlainObject(value)) return DEFAULT_TEMPLATE_CONFIG.whitepaper
+
+    return {
+        blockSpace: toPositiveNumber(value.blockSpace, DEFAULT_TEMPLATE_CONFIG.whitepaper.blockSpace),
+        enablePicture: isBoolean(value.enablePicture) ? value.enablePicture : DEFAULT_TEMPLATE_CONFIG.whitepaper.enablePicture,
+        pictureSize: toPositiveNumber(value.pictureSize, DEFAULT_TEMPLATE_CONFIG.whitepaper.pictureSize),
+        bulletText: isBoolean(value.bulletText) ? value.bulletText : DEFAULT_TEMPLATE_CONFIG.whitepaper.bulletText,
+        inlineInformation: isBoolean(value.inlineInformation)
+            ? value.inlineInformation
+            : DEFAULT_TEMPLATE_CONFIG.whitepaper.inlineInformation,
+        sectionOrder: normalizeWhitepaperSectionOrder(value.sectionOrder),
+    }
+}
+
+const normalizeClassicTemplate = (value: unknown): ClassicTemplateConfig => {
+    if (!isPlainObject(value)) return DEFAULT_TEMPLATE_CONFIG.classic
+
+    return {
+        blockSpace: toPositiveNumber(value.blockSpace, DEFAULT_TEMPLATE_CONFIG.classic.blockSpace),
+        bulletText: isBoolean(value.bulletText) ? value.bulletText : DEFAULT_TEMPLATE_CONFIG.classic.bulletText,
+    }
+}
+
+const normalizeTemplateConfig = (value: unknown): TemplateConfig => {
+    if (!isPlainObject(value)) return DEFAULT_TEMPLATE_CONFIG
+
+    return {
+        whitepaper: normalizeWhitepaperTemplate(value.whitepaper),
+        classic: normalizeClassicTemplate(value.classic),
+    }
 }
 
 const isPersonalDetails = (value: unknown): value is PersonalDetails => (
@@ -142,15 +211,35 @@ const isWorkExperienceItem = (value: unknown): value is WorkExperienceItem => (
     isStringArray(value.bulletSummary)
 )
 
-const isProjectItem = (value: unknown): value is ProjectItem => (
-    isPlainObject(value) &&
-    hasKeys(value, ["id", "projectName", "sourceCode", "preview", "projectDescription"]) &&
-    isString(value.id) &&
-    isString(value.projectName) &&
-    isString(value.sourceCode) &&
-    isString(value.preview) &&
-    isString(value.projectDescription)
-)
+const getLegacyProjectSubtitle = (value: UnknownRecord) => {
+    if (isString(value.projectSubtitle)) return value.projectSubtitle
+    if (isString(value.projectFramework)) return value.projectFramework
+    if (isString(value.projectFrameworks)) return value.projectFrameworks
+    if (isStringArray(value.projectFrameworks)) return value.projectFrameworks.join(", ")
+    return ""
+}
+
+const normalizeProjectItem = (value: unknown): ProjectItem | null => {
+    if (!isPlainObject(value)) return null
+    if (!isString(value.id) || !isString(value.projectName)) return null
+
+    return {
+        id: value.id,
+        projectName: value.projectName,
+        projectSubtitle: getLegacyProjectSubtitle(value),
+        preview: isString(value.preview) ? value.preview : "",
+        briefSummary: isString(value.briefSummary) ? value.briefSummary : toString(value.projectDescription),
+        bulletType: isBoolean(value.bulletType) ? value.bulletType : false,
+        bulletSummary: isStringArray(value.bulletSummary) ? value.bulletSummary : [],
+    }
+}
+
+const normalizeProjectItems = (value: unknown): ProjectItem[] | null => {
+    if (!Array.isArray(value)) return null
+    const normalized = value.map(item => normalizeProjectItem(item))
+    if (normalized.some(item => item === null)) return null
+    return normalized.filter((item): item is ProjectItem => item !== null)
+}
 
 const isCertificateItem = (value: unknown): value is CertificateItem => (
     isPlainObject(value) &&
@@ -191,12 +280,14 @@ export const validateImportData = (data: unknown): ResumeImportData | null => {
     if (!isStringArray(data.softSkills)) return null
     if (!Array.isArray(data.coreSkills) || !data.coreSkills.every(isCoreSkillItem)) return null
     if (!Array.isArray(data.workExperiences) || !data.workExperiences.every(isWorkExperienceItem)) return null
-    if (!Array.isArray(data.personalProjects) || !data.personalProjects.every(isProjectItem)) return null
+    const normalizedProjects = normalizeProjectItems(data.personalProjects)
+    if (!normalizedProjects) return null
     if (!Array.isArray(data.certificates) || !data.certificates.every(isCertificateItem)) return null
     if (!Array.isArray(data.achievements) || !data.achievements.every(isAchievementItem)) return null
     if (!isConfiguration(data.configuration)) return null
     const renderConfig = normalizeRenderConfig(data.enableInRender)
     if (!renderConfig) return null
+    const templateConfig = normalizeTemplateConfig(data.template)
     if (data.activePage !== undefined && (!isString(data.activePage) || !isActivePage(data.activePage))) return null
 
     const sanitized: ResumeImportData = {
@@ -206,7 +297,7 @@ export const validateImportData = (data: unknown): ResumeImportData | null => {
         softSkills: data.softSkills,
         coreSkills: data.coreSkills,
         workExperiences: data.workExperiences,
-        personalProjects: data.personalProjects,
+        personalProjects: normalizedProjects,
         certificates: data.certificates,
         achievements: data.achievements,
         configuration: {
@@ -215,6 +306,7 @@ export const validateImportData = (data: unknown): ResumeImportData | null => {
             fontSize: toNumber(data.configuration.fontSize),
         },
         enableInRender: renderConfig,
+        template: templateConfig,
     }
 
     if (isString(data.activePage) && isActivePage(data.activePage)) {

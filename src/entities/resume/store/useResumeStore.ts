@@ -11,9 +11,11 @@ import type {
     RenderConfig,
     ItemSectionKey,
     SectionItemMap,
+    ProjectItem,
 } from "@/entities/resume/types"
 import type { ActivePage } from "@/app/navigation"
 import { WHITEPAPER_SECTION_ORDER_DEFAULT } from "@/entities/resume/constants/whitepaperSections"
+import { useInterfaceStore } from "@/shared/store/useInterfaceStore"
 
 export type ResumeStore = ResumeData & {
     hasHydrated: boolean
@@ -102,6 +104,49 @@ const INITIAL_STATE: ResumeData & {
     },
 }
 
+type UnknownRecord = Record<string, unknown>
+
+const isPlainObject = (value: unknown): value is UnknownRecord =>
+    typeof value === "object" && value !== null && !Array.isArray(value)
+const isString = (value: unknown): value is string => typeof value === "string"
+const isBoolean = (value: unknown): value is boolean => typeof value === "boolean"
+const isStringArray = (value: unknown): value is string[] => Array.isArray(value) && value.every(isString)
+
+const getLegacyProjectSubtitle = (value: UnknownRecord) => {
+    if (isString(value.projectSubtitle)) return value.projectSubtitle
+    if (isString(value.projectFramework)) return value.projectFramework
+    if (isString(value.projectFrameworks)) return value.projectFrameworks
+    if (isStringArray(value.projectFrameworks)) return value.projectFrameworks.join(", ")
+    return ""
+}
+
+const normalizeProjectItems = (value: unknown, fallback: ProjectItem[]) => {
+    if (!Array.isArray(value)) return fallback
+
+    return value
+        .map((item) => {
+            if (!isPlainObject(item)) return null
+            const id = isString(item.id) ? item.id : nanoid()
+            return {
+                id,
+                projectName: isString(item.projectName) ? item.projectName : "",
+                projectSubtitle: getLegacyProjectSubtitle(item),
+                preview: isString(item.preview) ? item.preview : "",
+                briefSummary: isString(item.briefSummary) ? item.briefSummary : (isString(item.projectDescription) ? item.projectDescription : ""),
+                bulletType: isBoolean(item.bulletType) ? item.bulletType : false,
+                bulletSummary: isStringArray(item.bulletSummary) ? item.bulletSummary : [],
+            }
+        })
+        .filter((item): item is ProjectItem => item !== null)
+}
+
+const shouldResetAfterMerge = (state: Partial<ResumeStore>, normalizedProjects: ProjectItem[]) => {
+    if (state && !isPlainObject(state)) return true
+    if (state.personalDetails !== undefined && !isPlainObject(state.personalDetails)) return true
+    if (Array.isArray(state.personalProjects) && state.personalProjects.length > 0 && normalizedProjects.length === 0) return true
+    return false
+}
+
 export const useResumeStore = create<ResumeStore>()(
     persist(
         (set) => ({
@@ -135,39 +180,56 @@ export const useResumeStore = create<ResumeStore>()(
             name: "resumeData",
             storage: createJSONStorage(() => localforage),
             merge: (persistedState, currentState) => {
-                const state = persistedState as Partial<ResumeStore>
-                return {
-                    ...currentState,
-                    ...state,
-                    personalDetails: state.personalDetails || currentState.personalDetails,
-                    education: state.education || currentState.education,
-                    references: state.references || currentState.references,
-                    softSkills: state.softSkills || currentState.softSkills,
-                    coreSkills: state.coreSkills || currentState.coreSkills,
-                    workExperiences: state.workExperiences || currentState.workExperiences,
-                    personalProjects: state.personalProjects || currentState.personalProjects,
-                    certificates: state.certificates || currentState.certificates,
-                    achievements: state.achievements || currentState.achievements,
-                    configuration: {
-                        ...currentState.configuration,
-                        ...(state.configuration || {}),
-                    },
-                    enableInRender: {
-                        ...currentState.enableInRender,
-                        ...(state.enableInRender || {}),
-                    },
-                    template: {
-                        ...currentState.template,
-                        ...(state.template || {}),
-                        whitepaper: {
-                            ...currentState.template.whitepaper,
-                            ...(state.template?.whitepaper || {}),
+                const state = persistedState as Partial<ResumeStore> | null
+                if (!state) return currentState
+
+                try {
+                    const normalizedProjects = normalizeProjectItems(state.personalProjects, currentState.personalProjects)
+                    if (shouldResetAfterMerge(state, normalizedProjects)) {
+                        useInterfaceStore.getState().setHydrateNotice(
+                            "Saved data could not be loaded, so it was reset to defaults. You can re-import your JSON data from the Data panel."
+                        )
+                        return currentState
+                    }
+
+                    return {
+                        ...currentState,
+                        ...state,
+                        personalDetails: state.personalDetails || currentState.personalDetails,
+                        education: state.education || currentState.education,
+                        references: state.references || currentState.references,
+                        softSkills: state.softSkills || currentState.softSkills,
+                        coreSkills: state.coreSkills || currentState.coreSkills,
+                        workExperiences: state.workExperiences || currentState.workExperiences,
+                        personalProjects: normalizedProjects,
+                        certificates: state.certificates || currentState.certificates,
+                        achievements: state.achievements || currentState.achievements,
+                        configuration: {
+                            ...currentState.configuration,
+                            ...(state.configuration || {}),
                         },
-                        classic: {
-                            ...currentState.template.classic,
-                            ...(state.template?.classic || {}),
+                        enableInRender: {
+                            ...currentState.enableInRender,
+                            ...(state.enableInRender || {}),
                         },
-                    },
+                        template: {
+                            ...currentState.template,
+                            ...(state.template || {}),
+                            whitepaper: {
+                                ...currentState.template.whitepaper,
+                                ...(state.template?.whitepaper || {}),
+                            },
+                            classic: {
+                                ...currentState.template.classic,
+                                ...(state.template?.classic || {}),
+                            },
+                        },
+                    }
+                } catch {
+                    useInterfaceStore.getState().setHydrateNotice(
+                        "Saved data could not be loaded, so it was reset to defaults. You can re-import your JSON data from the Data panel."
+                    )
+                    return currentState
                 }
             },
             onRehydrateStorage: () => (state) => {

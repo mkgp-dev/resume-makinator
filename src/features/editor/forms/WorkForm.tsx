@@ -49,7 +49,10 @@ export default function WorkForm({ item }: WorkFormProps) {
                     isStretch={true}
                 />
             ) : (
-                <BulletList item={item} />
+                <BulletList
+                    items={item.bulletSummary}
+                    onChange={bulletSummary => modify("workExperiences", item.id, { bulletSummary })}
+                />
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">

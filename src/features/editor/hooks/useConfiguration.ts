@@ -61,6 +61,7 @@ export function useConfigurationHook() {
             achievements,
             configuration,
             enableInRender,
+            template,
         } = useResumeStore.getState()
 
         return {
@@ -76,6 +77,7 @@ export function useConfigurationHook() {
             achievements,
             configuration,
             enableInRender,
+            template,
         }
     }
 
