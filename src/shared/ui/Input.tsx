@@ -35,7 +35,7 @@ export default function Input({
                 type={type}
                 {...(type !== "file" && { value: value ?? "" })}
                 {...(type === "file" && accept === "image" && { accept: "image/*" })}
-                {...(type === "file" && accept === "json" && { accept: "application/json" })}
+                {...(type === "file" && accept === "json" && { accept: ".json,application/json,text/json" })}
                 placeholder={placeholder}
                 disabled={isDisabled}
                 onChange={onChange}

@@ -3,6 +3,7 @@ import type { Configuration, TemplateConfig } from "@/entities/resume/types"
 import { useInterfaceStore } from "@/shared/store/useInterfaceStore"
 import { useResumeStore } from "@/entities/resume/store/useResumeStore"
 import { MAX_IMPORT_SIZE_BYTES, isJsonFile, validateImportData } from "@/entities/resume/validation/import"
+import { useShallow } from "zustand/shallow"
 
 type NumberConfigKey = {
     [K in keyof Configuration]: Configuration[K] extends number ? K : never
@@ -24,16 +25,30 @@ export function useConfigurationHook() {
         return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
     }
 
-    const set = useResumeStore(state => state.setData)
-    const status = useInterfaceStore(state => state.dataStatus)
-    const update = useInterfaceStore(state => state.updateStatus)
-    const config = useResumeStore(state => state.configuration)
-    const modify = useResumeStore(state => state.updateConfig)
-    const render = useResumeStore(state => state.enableInRender)
-    const toggle = useResumeStore(state => state.toggleRender)
-    const template = useResumeStore(state => state.template)
-    const ammend = useResumeStore(state => state.updateTemplate)
-    const reset = useResumeStore(state => state.resetData)
+    const {
+        set,
+        config,
+        modify,
+        render,
+        toggle,
+        template,
+        ammend,
+        reset,
+    } = useResumeStore(useShallow((state) => ({
+        set: state.setData,
+        config: state.configuration,
+        modify: state.updateConfig,
+        render: state.enableInRender,
+        toggle: state.toggleRender,
+        template: state.template,
+        ammend: state.updateTemplate,
+        reset: state.resetData,
+    })))
+
+    const { status, update } = useInterfaceStore(useShallow((state) => ({
+        status: state.dataStatus,
+        update: state.updateStatus,
+    })))
 
     const updateNumberConfig = (key: NumberConfigKey, value: unknown) =>
         modify(key, toPositiveNumber(value, config[key]))
@@ -100,9 +115,14 @@ export function useConfigurationHook() {
     }
 
     const importData = (event: ChangeEvent<HTMLInputElement>) => {
+        const input = event.target
         const file = event.target.files?.[0]
         if (!file) return
-        if (!isJsonFile(file) || file.size > MAX_IMPORT_SIZE_BYTES) return update(false)
+        if (!isJsonFile(file) || file.size > MAX_IMPORT_SIZE_BYTES) {
+            update(false)
+            input.value = ""
+            return
+        }
 
         const reader = new FileReader()
         reader.onload = (e: ProgressEvent<FileReader>) => {
@@ -110,12 +130,18 @@ export function useConfigurationHook() {
                 const json = JSON.parse(e.target?.result as string)
                 const sanitized = validateImportData(json)
 
-                if (!sanitized) return update(false)
+                if (!sanitized) {
+                    update(false)
+                    input.value = ""
+                    return
+                }
 
                 set(sanitized)
                 update(true)
             } catch {
                 update(false)
+            } finally {
+                input.value = ""
             }
         }
         reader.readAsText(file)

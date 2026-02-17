@@ -1,9 +1,9 @@
 import Whitepaper from "@/features/viewer/templates/whitepaper/Whitepaper"
 import Classic from "@/features/viewer/templates/classic/Classic"
 import type { ReactElement } from "react"
-import type { ResumeData, TemplateId } from "@/entities/resume/types"
+import type { ResumePreviewData, TemplateId } from "@/entities/resume/types"
 
-type TemplateComponent = (props: { data: ResumeData }) => ReactElement
+type TemplateComponent = (props: { data: ResumePreviewData }) => ReactElement
 
 type TemplateEntry = {
     id: TemplateId

@@ -1,5 +1,4 @@
 import { Document, Page } from "@react-pdf/renderer"
-import { memo } from "react"
 import Classic from "@/features/viewer/templates/classic/Classic"
 import Whitepaper from "@/features/viewer/templates/whitepaper/Whitepaper"
 import type { ResumePreviewData, TemplateId } from "@/entities/resume/types"
@@ -8,7 +7,7 @@ type RenderProps = {
     data: ResumePreviewData
 }
 
-function Render({ data }: RenderProps) {
+export default function Render({ data }: RenderProps) {
     const templateId: TemplateId = data.configuration.template
 
     const documentTitle = data.personalDetails.fullName
@@ -37,5 +36,3 @@ function Render({ data }: RenderProps) {
         </Document>
     )
 }
-
-export default memo(Render)

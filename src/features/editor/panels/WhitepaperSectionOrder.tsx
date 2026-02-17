@@ -3,7 +3,7 @@ import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } 
 import { CSS } from "@dnd-kit/utilities"
 import { Bars3Icon } from "@heroicons/react/24/outline"
 import clsx from "clsx"
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import { useConfigurationHook } from "@/features/editor/hooks/useConfiguration"
 import {
     WHITEPAPER_SECTION_LABELS,
@@ -97,10 +97,7 @@ function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemPr
 export default function WhitepaperSectionOrder() {
     const { template, render, toggle, ammend } = useConfigurationHook()
     const sensors = useSensors(useSensor(PointerSensor))
-    const normalizedOrder = useMemo(
-        () => normalizeSectionOrder(template.whitepaper.sectionOrder),
-        [template.whitepaper.sectionOrder]
-    )
+    const normalizedOrder = normalizeSectionOrder(template.whitepaper.sectionOrder)
 
     useEffect(() => {
         if (!isSameOrder(template.whitepaper.sectionOrder, normalizedOrder)) {
