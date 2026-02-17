@@ -1,35 +1,41 @@
-import About from "@/features/editor/tabs/About"
-import Achievement from "@/features/editor/tabs/Achievement"
-import Certificate from "@/features/editor/tabs/Certificate"
-import Configuration from "@/features/editor/tabs/Configuration"
-import Data from "@/features/editor/tabs/Data"
-import Education from "@/features/editor/tabs/Education"
-import Information from "@/features/editor/tabs/Information"
-import Project from "@/features/editor/tabs/Project"
-import Reference from "@/features/editor/tabs/Reference"
-import Skill from "@/features/editor/tabs/Skill"
-import Work from "@/features/editor/tabs/Work"
+import { Suspense, lazy } from "react"
 import type { ActivePage } from "@/app/navigation"
+import type { PageId } from "@/app/navigation"
 
 type TabProps = {
     active: ActivePage
 }
 
+const TAB_COMPONENTS: Record<PageId, ReturnType<typeof lazy>> = {
+    about: lazy(() => import("@/features/editor/tabs/About")),
+    information: lazy(() => import("@/features/editor/tabs/Information")),
+    education: lazy(() => import("@/features/editor/tabs/Education")),
+    skill: lazy(() => import("@/features/editor/tabs/Skill")),
+    work: lazy(() => import("@/features/editor/tabs/Work")),
+    project: lazy(() => import("@/features/editor/tabs/Project")),
+    certificate: lazy(() => import("@/features/editor/tabs/Certificate")),
+    achievement: lazy(() => import("@/features/editor/tabs/Achievement")),
+    reference: lazy(() => import("@/features/editor/tabs/Reference")),
+    config: lazy(() => import("@/features/editor/tabs/Configuration")),
+    data: lazy(() => import("@/features/editor/tabs/Data")),
+}
+
 export default function Tab({ active }: TabProps) {
-    
+    if (!active) return null
+
+    const ActiveTab = TAB_COMPONENTS[active]
+
     return (
         <div key={active} className="animate-fade-in">
-            {active === "about" && <About />}
-            {active === "information" && <Information />}
-            {active === "education" && <Education />}
-            {active === "skill" && <Skill />}
-            {active === "work" && <Work />}
-            {active === "project" && <Project />}
-            {active === "certificate" && <Certificate />}
-            {active === "achievement" && <Achievement />}
-            {active === "reference" && <Reference />}
-            {active === "config" && <Configuration />}
-            {active === "data" && <Data />}
+            <Suspense
+                fallback={(
+                    <div className="flex min-h-[12rem] items-center justify-center">
+                        <span className="loading loading-spinner loading-md text-primary" />
+                    </div>
+                )}
+            >
+                <ActiveTab />
+            </Suspense>
         </div>
     )
 }

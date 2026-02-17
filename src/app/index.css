@@ -5,18 +5,22 @@
   themes: night --default;
 }
 
-@layer base {
-  @theme {
-    --font-sans: 'Inter Variable', sans-serif;
-    --font-manrope: 'Manrope Variable', sans-serif;
+@theme {
+  --font-sans: "Inter Variable", sans-serif;
+  --font-manrope: "Manrope Variable", sans-serif;
 
-    --animate-fade-in: fade-in 0.5s ease-in-out forwards;
-    @keyframes fade-in {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
+  --animate-fade-in: fade-in 0.5s ease-in-out forwards;
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
     }
   }
+}
 
+@layer base {
   html {
     @apply scroll-smooth antialiased select-none;
   }
