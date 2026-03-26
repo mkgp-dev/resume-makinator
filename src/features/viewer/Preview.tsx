@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react"
 import { useDebounce } from "use-debounce"
 import { InformationCircleIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline"
 import Button from "@/shared/ui/Button"
-import { useShallow } from "zustand/shallow"
+import { useShallow } from "zustand/react/shallow"
 import type { ResumeStore } from "@/entities/resume/store/useResumeStore"
 import type { ResumePreviewData } from "@/entities/resume/types"
 

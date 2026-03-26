@@ -44,6 +44,10 @@ export type ResumeStore = ResumeData & {
     resetData: () => void
 }
 
+type PersistedResumeState = ResumeImportData & {
+    hasAcknowledgedPrivacy: boolean
+}
+
 const INITIAL_STATE: ResumeData & {
     hasHydrated: boolean
     hasAcknowledgedPrivacy: boolean
@@ -152,6 +156,22 @@ export const useResumeStore = create<ResumeStore>()(
         {
             name: "resumeData",
             storage: createJSONStorage(() => localforage),
+            partialize: (state): PersistedResumeState => ({
+                activePage: state.activePage,
+                personalDetails: state.personalDetails,
+                education: state.education,
+                references: state.references,
+                softSkills: state.softSkills,
+                coreSkills: state.coreSkills,
+                workExperiences: state.workExperiences,
+                personalProjects: state.personalProjects,
+                certificates: state.certificates,
+                achievements: state.achievements,
+                configuration: state.configuration,
+                enableInRender: state.enableInRender,
+                template: state.template,
+                hasAcknowledgedPrivacy: state.hasAcknowledgedPrivacy,
+            }),
             merge: (persistedState, currentState) => {
                 const state = persistedState as Partial<ResumeStore> | null
                 if (!isPlainObject(state)) return currentState

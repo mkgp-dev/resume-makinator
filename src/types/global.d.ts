@@ -1,4 +1,6 @@
-type BufferConstructor = typeof import("buffer").Buffer
+import type { Buffer } from "buffer"
+
+type BufferConstructor = typeof Buffer
 
 declare global {
   var Buffer: BufferConstructor

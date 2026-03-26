@@ -3,7 +3,7 @@ import type { Configuration, TemplateConfig } from "@/entities/resume/types"
 import { useInterfaceStore } from "@/shared/store/useInterfaceStore"
 import { useResumeStore } from "@/entities/resume/store/useResumeStore"
 import { MAX_IMPORT_SIZE_BYTES, isJsonFile, validateImportData } from "@/entities/resume/validation/import"
-import { useShallow } from "zustand/shallow"
+import { useShallow } from "zustand/react/shallow"
 
 type NumberConfigKey = {
     [K in keyof Configuration]: Configuration[K] extends number ? K : never
@@ -26,32 +26,32 @@ export function useConfigurationHook() {
     }
 
     const {
-        set,
+        setData,
         config,
-        modify,
+        updateConfig,
         render,
         toggle,
         template,
-        ammend,
+        amendTemplate,
         reset,
     } = useResumeStore(useShallow((state) => ({
-        set: state.setData,
+        setData: state.setData,
         config: state.configuration,
-        modify: state.updateConfig,
+        updateConfig: state.updateConfig,
         render: state.enableInRender,
         toggle: state.toggleRender,
         template: state.template,
-        ammend: state.updateTemplate,
+        amendTemplate: state.updateTemplate,
         reset: state.resetData,
     })))
 
-    const { status, update } = useInterfaceStore(useShallow((state) => ({
-        status: state.dataStatus,
-        update: state.updateStatus,
+    const { dataStatus, setDataStatus } = useInterfaceStore(useShallow((state) => ({
+        dataStatus: state.dataStatus,
+        setDataStatus: state.updateStatus,
     })))
 
     const updateNumberConfig = (key: NumberConfigKey, value: unknown) =>
-        modify(key, toPositiveNumber(value, config[key]))
+        updateConfig(key, toPositiveNumber(value, config[key]))
     const updateTemplateNumber = <K extends keyof TemplateConfig>(
         section: K,
         key: TemplateNumberKey<K>,
@@ -59,7 +59,7 @@ export function useConfigurationHook() {
     ) => {
         const fallback = template[section][key] as number
         const next = toPositiveNumber(value, fallback)
-        ammend(section, key, next as TemplateConfig[K][TemplateNumberKey<K>])
+        amendTemplate(section, key, next as TemplateConfig[K][TemplateNumberKey<K>])
     }
 
     const getData = () => {
@@ -119,7 +119,7 @@ export function useConfigurationHook() {
         const file = event.target.files?.[0]
         if (!file) return
         if (!isJsonFile(file) || file.size > MAX_IMPORT_SIZE_BYTES) {
-            update(false)
+            setDataStatus(false)
             input.value = ""
             return
         }
@@ -131,15 +131,15 @@ export function useConfigurationHook() {
                 const sanitized = validateImportData(json)
 
                 if (!sanitized) {
-                    update(false)
+                    setDataStatus(false)
                     input.value = ""
                     return
                 }
 
-                set(sanitized)
-                update(true)
+                setData(sanitized)
+                setDataStatus(true)
             } catch {
-                update(false)
+                setDataStatus(false)
             } finally {
                 input.value = ""
             }
@@ -148,13 +148,13 @@ export function useConfigurationHook() {
     }
 
     return {
-        status,
+        dataStatus,
         config,
         render,
         template,
-        update,
-        modify,
-        ammend,
+        setDataStatus,
+        updateConfig,
+        amendTemplate,
         toggle,
         reset,
         importData,

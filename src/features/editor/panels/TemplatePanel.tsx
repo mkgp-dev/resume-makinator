@@ -8,7 +8,7 @@ import { useEffect } from "react"
 import type { Configuration } from "@/entities/resume/types"
 
 export default function TemplatePanel() {
-    const { config, template, modify, ammend, updateTemplateNumber } = useConfigurationHook()
+    const { config, template, updateConfig, amendTemplate, updateTemplateNumber } = useConfigurationHook()
     const templates = templateOptions
     const activeTemplateId = normalizeTemplateId(config.template)
     const activeTemplate = template[activeTemplateId] || template.whitepaper
@@ -17,9 +17,9 @@ export default function TemplatePanel() {
 
     useEffect(() => {
         if (activeTemplateId !== config.template) {
-            modify("template", activeTemplateId)
+            updateConfig("template", activeTemplateId)
         }
-    }, [activeTemplateId, config.template, modify])
+    }, [activeTemplateId, config.template, updateConfig])
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
@@ -28,7 +28,7 @@ export default function TemplatePanel() {
                     label="Select your theme"
                     value={activeTemplateId}
                     options={templates}
-                    onChange={value => modify("template", value as Configuration["template"])}
+                    onChange={value => updateConfig("template", value as Configuration["template"])}
                 />
 
                 <div className="mt-1">
@@ -38,21 +38,21 @@ export default function TemplatePanel() {
                                 <Checkbox
                                     label="Enable profile picture"
                                     isChecked={activeTemplate.enablePicture}
-                                    onChange={event => ammend(activeTemplateId, "enablePicture", event.target.checked)}
+                                    onChange={event => amendTemplate(activeTemplateId, "enablePicture", event.target.checked)}
                                 />
                             )}
 
                             <Checkbox
                                 label="Enable bullets"
                                 isChecked={activeTemplate.bulletText}
-                                onChange={event => ammend(activeTemplateId, "bulletText", event.target.checked)}
+                                onChange={event => amendTemplate(activeTemplateId, "bulletText", event.target.checked)}
                             />
 
                             {supportsInlineInformation && (
                                 <Checkbox
                                     label="Inline information"
                                     isChecked={activeTemplate.inlineInformation}
-                                    onChange={event => ammend(activeTemplateId, "inlineInformation", event.target.checked)}
+                                    onChange={event => amendTemplate(activeTemplateId, "inlineInformation", event.target.checked)}
                                 />
                             )}
                         </>
