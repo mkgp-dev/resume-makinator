@@ -1,5 +1,6 @@
 import ReactSelect from "react-select"
 import clsx from "clsx"
+import { useId } from "react"
 
 type SelectOptionItem = {
     name?: string
@@ -24,6 +25,7 @@ export default function Select({
     options = [],
     onChange,
 }: SelectProps) {
+    const selectId = useId()
     const selectOptions = options.map(item => ({
         value: item.value,
         label: item.name ?? String(item.value),
@@ -35,8 +37,14 @@ export default function Select({
 
     return (
         <fieldset className="fieldset">
-            {label && <legend className="fieldset-legend text-sm font-medium">{label}</legend>}
+            {label ? (
+                <label htmlFor={selectId} className="fieldset-legend text-sm font-medium">
+                    {label}
+                </label>
+            ) : null}
             <ReactSelect
+                inputId={selectId}
+                aria-label={label}
                 unstyled
                 value={selectedOption}
                 options={selectOptions}

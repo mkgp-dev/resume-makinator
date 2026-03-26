@@ -6,7 +6,7 @@ import { normalizeTemplateId } from "@/entities/resume/validation/template"
 import type { Configuration } from "@/entities/resume/types"
 
 export default function PagePanel() {
-    const { config, modify, updateNumberConfig } = useConfigurationHook()
+    const { config, updateConfig, updateNumberConfig } = useConfigurationHook()
     const activeTemplateId = normalizeTemplateId(config.template)
 
     const pageSize = [
@@ -28,14 +28,14 @@ export default function PagePanel() {
                     label="Paper size"
                     value={config.pageSize}
                     options={pageSize}
-                    onChange={value => modify("pageSize", value as Configuration["pageSize"])}
+                    onChange={value => updateConfig("pageSize", value as Configuration["pageSize"])}
                 />
 
                 <Select
                     label="Font style"
                     value={config.fontStyle}
                     options={fontStyle}
-                    onChange={value => modify("fontStyle", value as Configuration["fontStyle"])}
+                    onChange={value => updateConfig("fontStyle", value as Configuration["fontStyle"])}
                 />
 
                 <Input

@@ -1,5 +1,5 @@
 import { usePageHook } from "@/features/editor/hooks/usePage"
-import { Suspense, lazy, useEffect, useState } from "react"
+import { Suspense, lazy, useEffect } from "react"
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
 import Tab from "@/widgets/layout/Tab"
 import Default from "@/widgets/layout/Default"
@@ -8,43 +8,22 @@ import Card from "@/shared/ui/Card"
 import Toast from "@/shared/ui/Toast"
 import PrivacyModal from "@/widgets/modals/Privacy"
 import Footer from "@/widgets/layout/Footer"
-import localforage from "@/shared/lib/localForage"
 import { useInterfaceStore } from "@/shared/store/useInterfaceStore"
+import { getDocumentTitle } from "@/app/seo"
 
 const Preview = lazy(() => import("@/features/viewer/Preview"))
 
 export default function App() {
-  const { page, hydrate } = usePageHook()
+  const { page, hasHydrated } = usePageHook()
   const hydrateNotice = useInterfaceStore(state => state.hydrateNotice)
   const setHydrateNotice = useInterfaceStore(state => state.setHydrateNotice)
-  const [storageStatus, setStorageStatus] = useState<"checking" | "empty" | "hasData">("checking")
 
   useEffect(() => {
-    let isMounted = true
-    localforage.getItem("resumeData")
-      .then((value) => {
-        if (!isMounted) return
-        setStorageStatus(value ? "hasData" : "empty")
-      })
-      .catch(() => {
-        if (!isMounted) return
-        setStorageStatus("empty")
-      })
+    if (!hasHydrated) return
+    document.title = getDocumentTitle(page)
+  }, [hasHydrated, page])
 
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  if (storageStatus === "checking") {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary" />
-      </div>
-    )
-  }
-
-  if (storageStatus === "hasData" && !hydrate) {
+  if (!hasHydrated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <span className="loading loading-spinner loading-lg text-primary" />
@@ -92,7 +71,7 @@ export default function App() {
             </Suspense>
           </Card>
         </main>
-        
+
         <Footer />
       </div>
     </div>

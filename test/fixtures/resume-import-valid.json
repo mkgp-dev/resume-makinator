@@ -1,0 +1,68 @@
+{
+  "activePage": "about",
+  "personalDetails": {
+    "fullName": "Grace Hopper",
+    "jobTitle": "Computer Scientist",
+    "defaultAddress": "Arlington, VA",
+    "defaultEmail": "grace@example.com",
+    "defaultPhoneNumber": "5551234567",
+    "socialGithub": "gracehopper",
+    "socialLinkedin": "grace-hopper",
+    "summary": "Invented useful things.",
+    "profilePicture": "",
+    "knownLanguages": [
+      "English"
+    ]
+  },
+  "education": [],
+  "references": [],
+  "softSkills": [],
+  "coreSkills": [],
+  "workExperiences": [],
+  "personalProjects": [],
+  "certificates": [],
+  "achievements": [],
+  "configuration": {
+    "template": "whitepaper",
+    "fontStyle": "Lora",
+    "fontSize": 12,
+    "pageSize": "A4"
+  },
+  "enableInRender": {
+    "summary": true,
+    "workExperiences": false,
+    "personalProjects": false,
+    "certificates": false,
+    "education": false,
+    "coreSkills": false,
+    "references": false,
+    "softSkills": false,
+    "achievements": false,
+    "language": false
+  },
+  "template": {
+    "whitepaper": {
+      "blockSpace": 12,
+      "enablePicture": false,
+      "pictureSize": 100,
+      "bulletText": false,
+      "inlineInformation": true,
+      "sectionOrder": [
+        "summary",
+        "coreSkills",
+        "workExperiences",
+        "personalProjects",
+        "certificates",
+        "achievements",
+        "softSkills",
+        "education",
+        "knownLanguages",
+        "references"
+      ]
+    },
+    "classic": {
+      "blockSpace": 12,
+      "bulletText": true
+    }
+  }
+}

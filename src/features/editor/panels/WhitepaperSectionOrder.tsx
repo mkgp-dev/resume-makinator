@@ -95,15 +95,15 @@ function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemPr
 }
 
 export default function WhitepaperSectionOrder() {
-    const { template, render, toggle, ammend } = useConfigurationHook()
+    const { template, render, toggle, amendTemplate } = useConfigurationHook()
     const sensors = useSensors(useSensor(PointerSensor))
     const normalizedOrder = normalizeSectionOrder(template.whitepaper.sectionOrder)
 
     useEffect(() => {
         if (!isSameOrder(template.whitepaper.sectionOrder, normalizedOrder)) {
-            ammend("whitepaper", "sectionOrder", normalizedOrder)
+            amendTemplate("whitepaper", "sectionOrder", normalizedOrder)
         }
-    }, [template.whitepaper.sectionOrder, normalizedOrder, ammend])
+    }, [template.whitepaper.sectionOrder, normalizedOrder, amendTemplate])
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event
@@ -115,7 +115,7 @@ export default function WhitepaperSectionOrder() {
         const newIndex = normalizedOrder.indexOf(overId)
 
         if (oldIndex === -1 || newIndex === -1) return
-        ammend("whitepaper", "sectionOrder", arrayMove(normalizedOrder, oldIndex, newIndex))
+        amendTemplate("whitepaper", "sectionOrder", arrayMove(normalizedOrder, oldIndex, newIndex))
     }
 
     return (

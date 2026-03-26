@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useId, useState } from "react"
 import type { KeyboardEvent } from "react"
 import { LANGUAGE_OPTIONS } from "@/features/multiselect/constants/Languages"
 import { SOFT_SKILL_OPTIONS } from "@/features/multiselect/constants/SoftSkills"
@@ -51,6 +51,7 @@ export default function MultiSelect({
     onChange,
     allowMultiple = true,
 }: MultiSelectProps) {
+    const inputId = useId()
     const [input, setInput] = useState("")
     const setOptions = OPTIONS[mode] || []
 
@@ -139,8 +140,14 @@ export default function MultiSelect({
 
     return (
         <fieldset className="fieldset">
-            {label && <legend className="fieldset-legend text-sm font-medium">{label}</legend>}
+            {label ? (
+                <label htmlFor={inputId} className="fieldset-legend text-sm font-medium">
+                    {label}
+                </label>
+            ) : null}
             <CreatableSelect<Option, boolean>
+                inputId={inputId}
+                aria-label={label}
                 isMulti={allowMultiple}
                 unstyled
                 value={currentValue}

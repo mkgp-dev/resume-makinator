@@ -1,12 +1,12 @@
 import { useResumeStore } from "@/entities/resume/store/useResumeStore"
-import { useShallow } from "zustand/shallow"
+import { useShallow } from "zustand/react/shallow"
 
 export function usePageHook() {
-    const { page, hydrate, update } = useResumeStore(useShallow((state) => ({
+    const { page, hasHydrated, update } = useResumeStore(useShallow((state) => ({
         page: state.activePage,
-        hydrate: state.hasHydrated,
+        hasHydrated: state.hasHydrated,
         update: state.updatePage,
     })))
 
-    return { page, hydrate, update }
+    return { page, hasHydrated, update }
 }

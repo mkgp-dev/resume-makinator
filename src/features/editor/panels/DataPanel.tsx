@@ -12,11 +12,11 @@ import Card from "@/shared/ui/Card"
 import Input from "@/shared/ui/Input"
 
 export default function DataPanel() {
-    const { status, update, importData, exportData } = useConfigurationHook()
+    const { dataStatus, setDataStatus, importData, exportData } = useConfigurationHook()
 
     useEffect(() => {
-        update(null)
-    }, [update])
+        setDataStatus(null)
+    }, [setDataStatus])
 
     return (
         <div className="flex w-full flex-col">
@@ -30,18 +30,18 @@ export default function DataPanel() {
             <Card>
                 <div className="flex flex-col gap-2">
                     <Input type="file" accept="json" onChange={importData} noPadding={true} isStretch={true} />
-                    {status === null && (
+                    {dataStatus === null && (
                         <div className="flex items-start gap-2 text-xs text-slate-500">
                             <InformationCircleIcon className="size-6 shrink-0" />
                             <span>Import is limited to JSON files that were previously downloaded from this server. Other JSON files are not supported.</span>
                         </div>
                     )}
 
-                    {status === true && (
+                    {dataStatus === true && (
                         <Alert text="Data import completed without issues" icon={<CheckCircleIcon className="size-6 shrink-0" />} variant="success" isSoft={true} />
                     )}
 
-                    {status === false && (
+                    {dataStatus === false && (
                         <Alert text="The selected file does not match the required format" icon={<XCircleIcon className="size-6 shrink-0" />} variant="error" isSoft={true} />
                     )}
                 </div>
