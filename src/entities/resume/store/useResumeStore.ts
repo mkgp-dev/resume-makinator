@@ -14,7 +14,12 @@ import type {
 } from "@/entities/resume/types"
 import { isActivePage } from "@/app/navigation"
 import type { ActivePage } from "@/app/navigation"
-import { WHITEPAPER_SECTION_ORDER_DEFAULT } from "@/entities/resume/constants/whitepaperSections"
+import {
+    MODERN_ALT_SECTION_ORDER_DEFAULT,
+    MODERN_MAIN_SECTIONS_DEFAULT,
+    MODERN_SIDEBAR_SECTIONS_DEFAULT,
+    TEMPLATE_SECTION_ORDER_DEFAULT,
+} from "@/entities/resume/constants/templateSections"
 import { validateImportData } from "@/entities/resume/validation/import"
 import { useInterfaceStore } from "@/shared/store/useInterfaceStore"
 
@@ -100,11 +105,32 @@ const INITIAL_STATE: ResumeData & {
             pictureSize: 100,
             bulletText: false,
             inlineInformation: true,
-            sectionOrder: WHITEPAPER_SECTION_ORDER_DEFAULT,
+            sectionOrder: TEMPLATE_SECTION_ORDER_DEFAULT,
         },
         classic: {
             blockSpace: 12,
             bulletText: true,
+            enablePicture: false,
+            pictureSize: 100,
+            inlineInformation: true,
+            sectionOrder: TEMPLATE_SECTION_ORDER_DEFAULT,
+        },
+        modern: {
+            blockSpace: 12,
+            enablePicture: true,
+            pictureSize: 88,
+            bulletText: false,
+            accentColor: "#1f4b99",
+            sidebarSections: MODERN_SIDEBAR_SECTIONS_DEFAULT,
+            mainSections: MODERN_MAIN_SECTIONS_DEFAULT,
+        },
+        "modern-alt": {
+            blockSpace: 12,
+            enablePicture: true,
+            pictureSize: 92,
+            bulletText: true,
+            bannerColor: "#475569",
+            sectionOrder: MODERN_ALT_SECTION_ORDER_DEFAULT,
         },
     },
 }
@@ -182,6 +208,8 @@ export const useResumeStore = create<ResumeStore>()(
                     const template = asObject(state.template)
                     const whitepaperTemplate = asObject(template.whitepaper)
                     const classicTemplate = asObject(template.classic)
+                    const modernTemplate = asObject(template.modern)
+                    const modernAltTemplate = asObject(template["modern-alt"])
 
                     const sanitizedData = validateImportData({
                         personalDetails: state.personalDetails ?? currentState.personalDetails,
@@ -211,6 +239,14 @@ export const useResumeStore = create<ResumeStore>()(
                             classic: {
                                 ...currentState.template.classic,
                                 ...classicTemplate,
+                            },
+                            modern: {
+                                ...currentState.template.modern,
+                                ...modernTemplate,
+                            },
+                            "modern-alt": {
+                                ...currentState.template["modern-alt"],
+                                ...modernAltTemplate,
                             },
                         },
                         ...(state.activePage !== undefined ? { activePage: state.activePage } : {}),

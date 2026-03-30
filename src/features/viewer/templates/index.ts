@@ -1,5 +1,7 @@
 import Whitepaper from "@/features/viewer/templates/whitepaper/Whitepaper"
 import Classic from "@/features/viewer/templates/classic/Classic"
+import Modern from "@/features/viewer/templates/modern/Modern"
+import ModernAlt from "@/features/viewer/templates/modern-alt/ModernAlt"
 import type { ReactElement } from "react"
 import type { ResumePreviewData, TemplateId } from "@/entities/resume/types"
 
@@ -22,12 +24,22 @@ export const TEMPLATE_REGISTRY: Record<TemplateId, TemplateEntry> = {
         label: "Classic",
         Component: Classic,
     },
+    modern: {
+        id: "modern",
+        label: "Modern",
+        Component: Modern,
+    },
+    "modern-alt": {
+        id: "modern-alt",
+        label: "Modern Alt",
+        Component: ModernAlt,
+    },
 }
 
 export const templateOptions = Object.values(TEMPLATE_REGISTRY).map(template => ({
     name: template.label,
     value: template.id,
-})).filter(option => option.value !== "classic")
+}))
 
 export const getTemplateComponent = (templateId: TemplateId): TemplateComponent =>
     TEMPLATE_REGISTRY[templateId]?.Component || TEMPLATE_REGISTRY.whitepaper.Component

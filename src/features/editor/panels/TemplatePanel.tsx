@@ -7,13 +7,54 @@ import { normalizeTemplateId } from "@/entities/resume/validation/template"
 import { useEffect } from "react"
 import type { Configuration } from "@/entities/resume/types"
 
+const TEMPLATE_CAPABILITIES = {
+    whitepaper: {
+        picture: true,
+        bullets: true,
+        inlineInformation: true,
+        accentColor: false,
+    },
+    classic: {
+        picture: true,
+        bullets: true,
+        inlineInformation: true,
+        accentColor: false,
+    },
+    modern: {
+        picture: true,
+        bullets: true,
+        inlineInformation: false,
+        accentColor: true,
+    },
+    "modern-alt": {
+        picture: true,
+        bullets: true,
+        inlineInformation: false,
+        accentColor: true,
+    },
+} as const
+
 export default function TemplatePanel() {
     const { config, template, updateConfig, amendTemplate, updateTemplateNumber } = useConfigurationHook()
     const templates = templateOptions
     const activeTemplateId = normalizeTemplateId(config.template)
     const activeTemplate = template[activeTemplateId] || template.whitepaper
-    const supportsPicture = activeTemplateId === "whitepaper"
-    const supportsInlineInformation = activeTemplateId === "whitepaper"
+    const capabilities = TEMPLATE_CAPABILITIES[activeTemplateId]
+    const supportsInlineInformation = activeTemplateId === "whitepaper" || activeTemplateId === "classic"
+    const inlineTemplate = supportsInlineInformation ? template[activeTemplateId] : null
+    const colorField = activeTemplateId === "modern"
+        ? {
+            label: "Accent color",
+            value: template.modern.accentColor,
+            onChange: (value: string) => amendTemplate("modern", "accentColor", value),
+        }
+        : activeTemplateId === "modern-alt"
+            ? {
+                label: "Banner color",
+                value: template["modern-alt"].bannerColor,
+                onChange: (value: string) => amendTemplate("modern-alt", "bannerColor", value),
+            }
+            : null
 
     useEffect(() => {
         if (activeTemplateId !== config.template) {
@@ -22,7 +63,7 @@ export default function TemplatePanel() {
     }, [activeTemplateId, config.template, updateConfig])
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 xl:gap-4">
             <div className="flex flex-col">
                 <Select
                     label="Select your theme"
@@ -31,30 +72,35 @@ export default function TemplatePanel() {
                     onChange={value => updateConfig("template", value as Configuration["template"])}
                 />
 
-                <div className="mt-1">
+                <div className="mt-3 space-y-2">
                     {activeTemplate && (
                         <>
-                            {supportsPicture && (
+                            {capabilities.picture ? (
                                 <Checkbox
                                     label="Enable profile picture"
                                     isChecked={activeTemplate.enablePicture}
                                     onChange={event => amendTemplate(activeTemplateId, "enablePicture", event.target.checked)}
                                 />
-                            )}
+                            ) : null}
 
-                            <Checkbox
-                                label="Enable bullets"
-                                isChecked={activeTemplate.bulletText}
-                                onChange={event => amendTemplate(activeTemplateId, "bulletText", event.target.checked)}
-                            />
+                            {capabilities.bullets ? (
+                                <Checkbox
+                                    label="Enable bullets"
+                                    isChecked={activeTemplate.bulletText}
+                                    onChange={event => amendTemplate(activeTemplateId, "bulletText", event.target.checked)}
+                                />
+                            ) : null}
 
-                            {supportsInlineInformation && (
+                            {capabilities.inlineInformation ? (
                                 <Checkbox
                                     label="Inline information"
-                                    isChecked={activeTemplate.inlineInformation}
-                                    onChange={event => amendTemplate(activeTemplateId, "inlineInformation", event.target.checked)}
+                                    isChecked={inlineTemplate?.inlineInformation}
+                                    onChange={event => {
+                                        if (!supportsInlineInformation) return
+                                        amendTemplate(activeTemplateId, "inlineInformation", event.target.checked)
+                                    }}
                                 />
-                            )}
+                            ) : null}
                         </>
                     )}
                 </div>
@@ -62,7 +108,7 @@ export default function TemplatePanel() {
 
             <div className="flex flex-col">
                 {activeTemplate && (
-                    <>
+                    <div className="space-y-3">
                         <Input
                             label="Component spacing"
                             value={activeTemplate.blockSpace}
@@ -71,7 +117,7 @@ export default function TemplatePanel() {
                             isStretch={true}
                         />
 
-                        {supportsPicture && (
+                        {capabilities.picture ? (
                             <Input
                                 label="Profile picture size"
                                 value={activeTemplate.pictureSize}
@@ -80,8 +126,35 @@ export default function TemplatePanel() {
                                 isStretch={true}
                                 isDisabled={!activeTemplate.enablePicture}
                             />
-                        )}
-                    </>
+                        ) : null}
+
+                        {capabilities.accentColor && colorField ? (
+                            <fieldset className="fieldset">
+                                <label className="fieldset-legend text-sm font-medium" htmlFor="template-color">
+                                    {colorField.label}
+                                </label>
+                                <div className="flex flex-wrap items-center gap-3 rounded-md border border-slate-600 bg-slate-800 px-3 py-3">
+                                    <input
+                                        id="template-color"
+                                        type="color"
+                                        aria-label={colorField.label}
+                                        value={colorField.value}
+                                        onChange={event => colorField.onChange(event.target.value)}
+                                        className="h-10 w-14 shrink-0 cursor-pointer rounded border border-slate-500 bg-transparent p-1"
+                                    />
+                                    <div className="min-w-0 flex-1">
+                                        <div className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Selected</div>
+                                        <div className="font-mono text-sm text-slate-100">{colorField.value}</div>
+                                    </div>
+                                    <div
+                                        aria-hidden="true"
+                                        className="size-6 shrink-0 rounded-full border border-slate-400"
+                                        style={{ backgroundColor: colorField.value }}
+                                    />
+                                </div>
+                            </fieldset>
+                        ) : null}
+                    </div>
                 )}
             </div>
 

@@ -5,49 +5,26 @@ import { Bars3Icon } from "@heroicons/react/24/outline"
 import clsx from "clsx"
 import { useEffect } from "react"
 import { useConfigurationHook } from "@/features/editor/hooks/useConfiguration"
+import { TEMPLATE_SECTION_LABELS } from "@/entities/resume/constants/templateSections"
 import {
-    WHITEPAPER_SECTION_LABELS,
-    WHITEPAPER_SECTION_ORDER_DEFAULT,
-} from "@/entities/resume/constants/whitepaperSections"
+    isSameTemplateSectionOrder,
+    normalizeTemplateSectionOrder,
+    TEMPLATE_SECTION_TOGGLE_KEYS,
+} from "@/entities/resume/lib/templateSections"
 import type { DragEndEvent } from "@dnd-kit/core"
-import type { RenderConfig, WhitepaperSectionKey } from "@/entities/resume/types"
+import type { TemplateSectionKey } from "@/entities/resume/types"
+
+type LinearTemplateId = "whitepaper" | "classic" | "modern-alt"
 
 type SectionOrderItemProps = {
-    id: WhitepaperSectionKey
+    id: TemplateSectionKey
     label: string
     isEnabled: boolean
     onToggle: () => void
 }
 
-const normalizeSectionOrder = (value?: WhitepaperSectionKey[]) => {
-    const seen = new Set<WhitepaperSectionKey>()
-    const sanitized = (value || []).filter((key) => {
-        if (!WHITEPAPER_SECTION_LABELS[key]) return false
-        if (seen.has(key)) return false
-        seen.add(key)
-        return true
-    })
-
-    const missing = WHITEPAPER_SECTION_ORDER_DEFAULT.filter((key) => !seen.has(key))
-    return [...sanitized, ...missing]
-}
-
-const isSameOrder = (a: WhitepaperSectionKey[] | undefined, b: WhitepaperSectionKey[]) => {
-    if (!a || a.length !== b.length) return false
-    return a.every((key, index) => key === b[index])
-}
-
-const SECTION_TOGGLE_KEYS: Record<WhitepaperSectionKey, keyof RenderConfig> = {
-    summary: "summary",
-    coreSkills: "coreSkills",
-    workExperiences: "workExperiences",
-    personalProjects: "personalProjects",
-    certificates: "certificates",
-    achievements: "achievements",
-    softSkills: "softSkills",
-    education: "education",
-    knownLanguages: "language",
-    references: "references",
+type TemplateSectionOrderProps = {
+    templateId: LinearTemplateId
 }
 
 function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemProps) {
@@ -94,28 +71,28 @@ function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemPr
     )
 }
 
-export default function WhitepaperSectionOrder() {
+export default function TemplateSectionOrder({ templateId }: TemplateSectionOrderProps) {
     const { template, render, toggle, amendTemplate } = useConfigurationHook()
     const sensors = useSensors(useSensor(PointerSensor))
-    const normalizedOrder = normalizeSectionOrder(template.whitepaper.sectionOrder)
+    const normalizedOrder = normalizeTemplateSectionOrder(template[templateId].sectionOrder)
 
     useEffect(() => {
-        if (!isSameOrder(template.whitepaper.sectionOrder, normalizedOrder)) {
-            amendTemplate("whitepaper", "sectionOrder", normalizedOrder)
+        if (!isSameTemplateSectionOrder(template[templateId].sectionOrder, normalizedOrder)) {
+            amendTemplate(templateId, "sectionOrder", normalizedOrder)
         }
-    }, [template.whitepaper.sectionOrder, normalizedOrder, amendTemplate])
+    }, [template, templateId, normalizedOrder, amendTemplate])
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event
         if (!over || active.id === over.id) return
 
-        const activeId = active.id as WhitepaperSectionKey
-        const overId = over.id as WhitepaperSectionKey
+        const activeId = active.id as TemplateSectionKey
+        const overId = over.id as TemplateSectionKey
         const oldIndex = normalizedOrder.indexOf(activeId)
         const newIndex = normalizedOrder.indexOf(overId)
 
         if (oldIndex === -1 || newIndex === -1) return
-        amendTemplate("whitepaper", "sectionOrder", arrayMove(normalizedOrder, oldIndex, newIndex))
+        amendTemplate(templateId, "sectionOrder", arrayMove(normalizedOrder, oldIndex, newIndex))
     }
 
     return (
@@ -132,12 +109,12 @@ export default function WhitepaperSectionOrder() {
                             </div>
                         ) : (
                             normalizedOrder.map((key) => {
-                                const toggleKey = SECTION_TOGGLE_KEYS[key]
+                                const toggleKey = TEMPLATE_SECTION_TOGGLE_KEYS[key]
                                 return (
                                     <SectionOrderItem
                                         key={key}
                                         id={key}
-                                        label={WHITEPAPER_SECTION_LABELS[key]}
+                                        label={TEMPLATE_SECTION_LABELS[key]}
                                         isEnabled={render[toggleKey]}
                                         onToggle={() => toggle(toggleKey)}
                                     />

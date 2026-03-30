@@ -1,15 +1,17 @@
 import { Document, Page } from "@react-pdf/renderer"
-import Classic from "@/features/viewer/templates/classic/Classic"
-import Whitepaper from "@/features/viewer/templates/whitepaper/Whitepaper"
-import type { ResumePreviewData, TemplateId } from "@/entities/resume/types"
+import { getTemplateComponent } from "@/features/viewer/templates"
+import type { ResumePreviewData } from "@/entities/resume/types"
 
 type RenderProps = {
     data: ResumePreviewData
 }
 
-export default function Render({ data }: RenderProps) {
-    const templateId: TemplateId = data.configuration.template
+const renderTemplateContent = (data: ResumePreviewData) => {
+    const Template = getTemplateComponent(data.configuration.template)
+    return Template({ data })
+}
 
+export default function Render({ data }: RenderProps) {
     const documentTitle = data.personalDetails.fullName
         ? `${data.personalDetails.fullName} - ${data.personalDetails.jobTitle || "Resume"}`
         : "My Resume"
@@ -27,11 +29,7 @@ export default function Render({ data }: RenderProps) {
                 size={data.configuration.pageSize}
                 style={{ padding: 15 }}
             >
-                {templateId === "classic" ? (
-                    <Classic data={data} />
-                ) : (
-                    <Whitepaper data={data} />
-                )}
+                {renderTemplateContent(data)}
             </Page>
         </Document>
     )

@@ -1,0 +1,177 @@
+{
+  "activePage": "about",
+  "personalDetails": {
+    "fullName": "Harold Finch",
+    "jobTitle": "Systems Architect",
+    "defaultAddress": "New York, NY",
+    "defaultEmail": "finch@example.com",
+    "defaultPhoneNumber": "5553338899",
+    "socialGithub": "haroldfinch",
+    "socialLinkedin": "harold-finch",
+    "summary": "Designs resilient software systems and discreet intelligence platforms.",
+    "profilePicture": "",
+    "knownLanguages": [
+      "English",
+      "Machine Learning"
+    ]
+  },
+  "education": [
+    {
+      "id": "edu-1",
+      "schoolName": "MIT",
+      "courseDegree": "M.S. Computer Science",
+      "startYear": "1990",
+      "endYear": "1992",
+      "currentEnrolled": false
+    }
+  ],
+  "references": [
+    {
+      "id": "ref-1",
+      "fullName": "Grace Hendricks",
+      "jobTitle": "Program Director",
+      "companyName": "I.F.T.",
+      "defaultPhoneNumber": "5551119900",
+      "defaultEmail": "grace@example.com"
+    }
+  ],
+  "softSkills": [
+    "Strategic Thinking",
+    "Discretion"
+  ],
+  "coreSkills": [
+    {
+      "id": "core-1",
+      "devLanguage": "Platforms",
+      "devFramework": [
+        "Distributed Systems",
+        "Automation"
+      ]
+    }
+  ],
+  "workExperiences": [
+    {
+      "id": "work-1",
+      "companyName": "IFT",
+      "jobTitle": "Founder",
+      "briefSummary": "Built secure intelligence infrastructure.",
+      "startYear": "2002",
+      "endYear": "Present",
+      "currentlyHired": true,
+      "bulletType": true,
+      "bulletSummary": [
+        "Led platform strategy for critical decision systems.",
+        "Designed resilient automation workflows."
+      ]
+    }
+  ],
+  "personalProjects": [],
+  "certificates": [],
+  "achievements": [
+    {
+      "id": "ach-1",
+      "achievementName": "Innovation Recognition",
+      "achievementIssuer": "Research Council",
+      "yearIssued": "2004",
+      "achievementDescription": "Recognized for adaptive systems work."
+    }
+  ],
+  "configuration": {
+    "template": "modern-alt",
+    "fontStyle": "Lora",
+    "fontSize": 12,
+    "pageSize": "A4"
+  },
+  "enableInRender": {
+    "summary": true,
+    "workExperiences": true,
+    "personalProjects": false,
+    "certificates": false,
+    "education": true,
+    "coreSkills": true,
+    "references": true,
+    "softSkills": true,
+    "achievements": true,
+    "language": true
+  },
+  "template": {
+    "whitepaper": {
+      "blockSpace": 12,
+      "enablePicture": false,
+      "pictureSize": 100,
+      "bulletText": false,
+      "inlineInformation": true,
+      "sectionOrder": [
+        "summary",
+        "coreSkills",
+        "workExperiences",
+        "personalProjects",
+        "certificates",
+        "achievements",
+        "softSkills",
+        "education",
+        "knownLanguages",
+        "references"
+      ]
+    },
+    "classic": {
+      "blockSpace": 12,
+      "enablePicture": false,
+      "pictureSize": 100,
+      "bulletText": true,
+      "inlineInformation": true,
+      "sectionOrder": [
+        "summary",
+        "coreSkills",
+        "workExperiences",
+        "personalProjects",
+        "certificates",
+        "achievements",
+        "softSkills",
+        "education",
+        "knownLanguages",
+        "references"
+      ]
+    },
+    "modern": {
+      "blockSpace": 12,
+      "enablePicture": true,
+      "pictureSize": 88,
+      "bulletText": true,
+      "accentColor": "#1f4b99",
+      "sidebarSections": [
+        "summary",
+        "knownLanguages",
+        "softSkills",
+        "achievements",
+        "references"
+      ],
+      "mainSections": [
+        "coreSkills",
+        "workExperiences",
+        "personalProjects",
+        "certificates",
+        "education"
+      ]
+    },
+    "modern-alt": {
+      "blockSpace": 12,
+      "enablePicture": true,
+      "pictureSize": 84,
+      "bulletText": true,
+      "bannerColor": "not-a-color",
+      "sectionOrder": [
+        "summary",
+        "workExperiences",
+        "education",
+        "coreSkills",
+        "softSkills",
+        "knownLanguages",
+        "achievements",
+        "references",
+        "certificates",
+        "personalProjects"
+      ]
+    }
+  }
+}

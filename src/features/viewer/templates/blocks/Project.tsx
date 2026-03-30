@@ -1,21 +1,24 @@
 import { View, Text, StyleSheet, Link } from "@react-pdf/renderer"
 import Dot from "@/features/viewer/components/icons/Dot"
-import type { ProjectItem } from "@/entities/resume/types"
+import type { ProjectItem, TemplateId } from "@/entities/resume/types"
 
 type ProjectProps = {
     items: ProjectItem[]
+    variant: TemplateId
+    baseFontSize: number
 }
 
-export default function Project({ items }: ProjectProps) {
+export default function Project({ items, variant, baseFontSize }: ProjectProps) {
+    const isClassic = variant === "classic"
+    const bulletIndent = Math.round(baseFontSize * 0.6) + 4
+
     const styles = StyleSheet.create({
         container: {
-            marginBottom: 6,
+            marginBottom: isClassic ? 6 : 10,
         },
         name: {
-            fontSize: 14,
-            fontWeight: "bold",
-        },
-        linkText: {
+            fontSize: isClassic ? 14 : baseFontSize + 2,
+            fontWeight: isClassic ? "bold" : "medium",
             textDecoration: "none",
             color: "#000000",
         },
@@ -25,15 +28,21 @@ export default function Project({ items }: ProjectProps) {
         },
         subtitle: {
             color: "#6F6F7D",
-            fontSize: 10,
+            ...(isClassic ? { fontSize: 10 } : {}),
         },
         list: {
-            marginTop: 3,
+            flexDirection: "column",
+            ...(isClassic ? { marginTop: 3 } : {}),
         },
         listItem: {
             flexDirection: "row",
-            alignItems: "flex-start",
-            marginBottom: 2,
+            alignItems: isClassic ? "flex-start" : undefined,
+            gap: isClassic ? undefined : 2,
+            marginBottom: isClassic ? 2 : 0,
+        },
+        bullet: {
+            width: bulletIndent,
+            textAlign: "center",
         },
         dot: {
             marginTop: 5,
@@ -62,12 +71,19 @@ export default function Project({ items }: ProjectProps) {
             {item.bulletType ? (
                 <View style={styles.list}>
                     {item.bulletSummary
-                        ?.filter(line => line.trim().length > 0)
+                        .filter(line => line.trim().length > 0)
                         .map((line, lineIndex) => (
-                            <View key={lineIndex} style={styles.listItem}>
-                                <Dot style={styles.dot} />
-                                <Text style={styles.listText}>{line}</Text>
-                            </View>
+                            isClassic ? (
+                                <View key={lineIndex} style={styles.listItem}>
+                                    <Dot style={styles.dot} />
+                                    <Text style={styles.listText}>{line}</Text>
+                                </View>
+                            ) : (
+                                <View key={lineIndex} style={styles.listItem}>
+                                    <Text style={styles.bullet}>•</Text>
+                                    <Text style={styles.listText}>{line}</Text>
+                                </View>
+                            )
                         ))}
                 </View>
             ) : (

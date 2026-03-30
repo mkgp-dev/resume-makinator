@@ -1,10 +1,18 @@
 import { REQUIRED_DATA_KEYS, RENDER_SECTION_KEYS } from "@/entities/resume/constants/sectionKeys"
-import { WHITEPAPER_SECTION_ORDER_DEFAULT } from "@/entities/resume/constants/whitepaperSections"
+import {
+    MODERN_ALT_SECTION_ORDER_DEFAULT,
+    MODERN_MAIN_SECTIONS_DEFAULT,
+    MODERN_SIDEBAR_SECTIONS_DEFAULT,
+    TEMPLATE_SECTION_ORDER_DEFAULT,
+} from "@/entities/resume/constants/templateSections"
+import { normalizeModernSectionZones } from "@/entities/resume/lib/templateSections"
 import { normalizeTemplateId } from "@/entities/resume/validation/template"
 import type {
     AchievementItem,
     CertificateItem,
     ClassicTemplateConfig,
+    ModernAltTemplateConfig,
+    ModernTemplateConfig,
     Configuration,
     CoreSkillItem,
     EducationItem,
@@ -13,9 +21,10 @@ import type {
     ReferenceItem,
     RenderConfig,
     ResumeImportData,
+    SharedTemplateConfig,
     TemplateConfig,
+    TemplateSectionKey,
     WorkExperienceItem,
-    WhitepaperSectionKey,
     WhitepaperTemplateConfig,
 } from "@/entities/resume/types"
 import { isActivePage } from "@/app/navigation"
@@ -60,11 +69,32 @@ const DEFAULT_TEMPLATE_CONFIG: TemplateConfig = {
         pictureSize: 100,
         bulletText: false,
         inlineInformation: true,
-        sectionOrder: WHITEPAPER_SECTION_ORDER_DEFAULT,
+        sectionOrder: TEMPLATE_SECTION_ORDER_DEFAULT,
     },
     classic: {
         blockSpace: 12,
         bulletText: true,
+        enablePicture: false,
+        pictureSize: 100,
+        inlineInformation: true,
+        sectionOrder: TEMPLATE_SECTION_ORDER_DEFAULT,
+    },
+    modern: {
+        blockSpace: 12,
+        enablePicture: true,
+        pictureSize: 88,
+        bulletText: false,
+        accentColor: "#1f4b99",
+        sidebarSections: MODERN_SIDEBAR_SECTIONS_DEFAULT,
+        mainSections: MODERN_MAIN_SECTIONS_DEFAULT,
+    },
+    "modern-alt": {
+        blockSpace: 12,
+        enablePicture: true,
+        pictureSize: 92,
+        bulletText: true,
+        bannerColor: "#475569",
+        sectionOrder: MODERN_ALT_SECTION_ORDER_DEFAULT,
     },
 }
 
@@ -96,38 +126,73 @@ const normalizeRenderConfig = (value: unknown): RenderConfig | null => {
     return result
 }
 
-const normalizeWhitepaperSectionOrder = (value: unknown): WhitepaperSectionKey[] => {
+const normalizeTemplateSectionOrder = (value: unknown): TemplateSectionKey[] => {
     if (!Array.isArray(value)) return DEFAULT_TEMPLATE_CONFIG.whitepaper.sectionOrder
     const keys = value.filter(isString)
-    const allowed = new Set(WHITEPAPER_SECTION_ORDER_DEFAULT)
-    if (keys.length !== value.length || !keys.every(key => allowed.has(key as WhitepaperSectionKey))) {
+    const allowed = new Set(TEMPLATE_SECTION_ORDER_DEFAULT)
+    if (keys.length !== value.length || !keys.every(key => allowed.has(key as TemplateSectionKey))) {
         return DEFAULT_TEMPLATE_CONFIG.whitepaper.sectionOrder
     }
 
-    return keys as WhitepaperSectionKey[]
+    return keys as TemplateSectionKey[]
 }
 
-const normalizeWhitepaperTemplate = (value: unknown): WhitepaperTemplateConfig => {
-    if (!isPlainObject(value)) return DEFAULT_TEMPLATE_CONFIG.whitepaper
-
+const normalizeTemplateSettings = (
+    value: unknown,
+    defaults: SharedTemplateConfig
+): SharedTemplateConfig => {
+    if (!isPlainObject(value)) return defaults
     return {
-        blockSpace: toPositiveNumber(value.blockSpace, DEFAULT_TEMPLATE_CONFIG.whitepaper.blockSpace),
-        enablePicture: isBoolean(value.enablePicture) ? value.enablePicture : DEFAULT_TEMPLATE_CONFIG.whitepaper.enablePicture,
-        pictureSize: toPositiveNumber(value.pictureSize, DEFAULT_TEMPLATE_CONFIG.whitepaper.pictureSize),
-        bulletText: isBoolean(value.bulletText) ? value.bulletText : DEFAULT_TEMPLATE_CONFIG.whitepaper.bulletText,
+        blockSpace: toPositiveNumber(value.blockSpace, defaults.blockSpace),
+        enablePicture: isBoolean(value.enablePicture) ? value.enablePicture : defaults.enablePicture,
+        pictureSize: toPositiveNumber(value.pictureSize, defaults.pictureSize),
+        bulletText: isBoolean(value.bulletText) ? value.bulletText : defaults.bulletText,
         inlineInformation: isBoolean(value.inlineInformation)
             ? value.inlineInformation
-            : DEFAULT_TEMPLATE_CONFIG.whitepaper.inlineInformation,
-        sectionOrder: normalizeWhitepaperSectionOrder(value.sectionOrder),
+            : defaults.inlineInformation,
+        sectionOrder: normalizeTemplateSectionOrder(value.sectionOrder),
     }
 }
 
+const normalizeWhitepaperTemplate = (value: unknown): WhitepaperTemplateConfig =>
+    normalizeTemplateSettings(value, DEFAULT_TEMPLATE_CONFIG.whitepaper)
+
 const normalizeClassicTemplate = (value: unknown): ClassicTemplateConfig => {
-    if (!isPlainObject(value)) return DEFAULT_TEMPLATE_CONFIG.classic
+    return normalizeTemplateSettings(value, DEFAULT_TEMPLATE_CONFIG.classic)
+}
+
+const isHexColor = (value: unknown): value is string =>
+    isString(value) && /^#[0-9A-Fa-f]{6}$/.test(value)
+
+const normalizeModernTemplate = (value: unknown): ModernTemplateConfig => {
+    if (!isPlainObject(value)) return DEFAULT_TEMPLATE_CONFIG.modern
+
+    const normalizedZones = normalizeModernSectionZones(
+        Array.isArray(value.sidebarSections) ? value.sidebarSections.filter(isString) as TemplateSectionKey[] : undefined,
+        Array.isArray(value.mainSections) ? value.mainSections.filter(isString) as TemplateSectionKey[] : undefined,
+    )
 
     return {
-        blockSpace: toPositiveNumber(value.blockSpace, DEFAULT_TEMPLATE_CONFIG.classic.blockSpace),
-        bulletText: isBoolean(value.bulletText) ? value.bulletText : DEFAULT_TEMPLATE_CONFIG.classic.bulletText,
+        blockSpace: toPositiveNumber(value.blockSpace, DEFAULT_TEMPLATE_CONFIG.modern.blockSpace),
+        enablePicture: isBoolean(value.enablePicture) ? value.enablePicture : DEFAULT_TEMPLATE_CONFIG.modern.enablePicture,
+        pictureSize: toPositiveNumber(value.pictureSize, DEFAULT_TEMPLATE_CONFIG.modern.pictureSize),
+        bulletText: isBoolean(value.bulletText) ? value.bulletText : DEFAULT_TEMPLATE_CONFIG.modern.bulletText,
+        accentColor: isHexColor(value.accentColor) ? value.accentColor : DEFAULT_TEMPLATE_CONFIG.modern.accentColor,
+        sidebarSections: normalizedZones.sidebar,
+        mainSections: normalizedZones.main,
+    }
+}
+
+const normalizeModernAltTemplate = (value: unknown): ModernAltTemplateConfig => {
+    if (!isPlainObject(value)) return DEFAULT_TEMPLATE_CONFIG["modern-alt"]
+
+    return {
+        blockSpace: toPositiveNumber(value.blockSpace, DEFAULT_TEMPLATE_CONFIG["modern-alt"].blockSpace),
+        enablePicture: isBoolean(value.enablePicture) ? value.enablePicture : DEFAULT_TEMPLATE_CONFIG["modern-alt"].enablePicture,
+        pictureSize: toPositiveNumber(value.pictureSize, DEFAULT_TEMPLATE_CONFIG["modern-alt"].pictureSize),
+        bulletText: isBoolean(value.bulletText) ? value.bulletText : DEFAULT_TEMPLATE_CONFIG["modern-alt"].bulletText,
+        bannerColor: isHexColor(value.bannerColor) ? value.bannerColor : DEFAULT_TEMPLATE_CONFIG["modern-alt"].bannerColor,
+        sectionOrder: normalizeTemplateSectionOrder(value.sectionOrder),
     }
 }
 
@@ -137,6 +202,8 @@ const normalizeTemplateConfig = (value: unknown): TemplateConfig => {
     return {
         whitepaper: normalizeWhitepaperTemplate(value.whitepaper),
         classic: normalizeClassicTemplate(value.classic),
+        modern: normalizeModernTemplate(value.modern),
+        "modern-alt": normalizeModernAltTemplate(value["modern-alt"]),
     }
 }
 

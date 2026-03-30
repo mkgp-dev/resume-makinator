@@ -7,6 +7,9 @@ type TemplateOption = {
 
 export const TEMPLATE_OPTIONS: TemplateOption[] = [
     { name: "Simple Whitepaper", value: "whitepaper" },
+    { name: "Classic", value: "classic" },
+    { name: "Modern", value: "modern" },
+    { name: "Modern Alt", value: "modern-alt" },
 ]
 
 export const DEFAULT_TEMPLATE_ID: TemplateId = TEMPLATE_OPTIONS[0].value

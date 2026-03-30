@@ -21,9 +21,7 @@ export default function Section({ title, children }: SectionProps) {
 
     return (
         <View>
-            <View>
-                <Text style={styles.title}>{title}</Text>
-            </View>
+            <Text style={styles.title}>{title}</Text>
             {children}
         </View>
     )

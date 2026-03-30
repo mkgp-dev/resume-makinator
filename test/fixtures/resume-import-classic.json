@@ -1,14 +1,14 @@
 {
   "activePage": "about",
   "personalDetails": {
-    "fullName": "Grace Hopper",
-    "jobTitle": "Computer Scientist",
-    "defaultAddress": "Arlington, VA",
-    "defaultEmail": "grace@example.com",
-    "defaultPhoneNumber": "5551234567",
-    "socialGithub": "gracehopper",
-    "socialLinkedin": "grace-hopper",
-    "summary": "Invented useful things.",
+    "fullName": "Katherine Johnson",
+    "jobTitle": "Mathematician",
+    "defaultAddress": "Hampton, VA",
+    "defaultEmail": "katherine@example.com",
+    "defaultPhoneNumber": "5559876543",
+    "socialGithub": "kjohnson",
+    "socialLinkedin": "katherine-johnson",
+    "summary": "Calculated mission trajectories with precision.",
     "profilePicture": "",
     "knownLanguages": [
       "English"
@@ -16,14 +16,24 @@
   },
   "education": [],
   "references": [],
-  "softSkills": [],
-  "coreSkills": [],
+  "softSkills": [
+    "Analytical thinking"
+  ],
+  "coreSkills": [
+    {
+      "id": "core-1",
+      "devLanguage": "Mathematics",
+      "devFramework": [
+        "Orbital Mechanics"
+      ]
+    }
+  ],
   "workExperiences": [],
   "personalProjects": [],
   "certificates": [],
   "achievements": [],
   "configuration": {
-    "template": "whitepaper",
+    "template": "classic",
     "fontStyle": "Lora",
     "fontSize": 12,
     "pageSize": "A4"
@@ -34,11 +44,11 @@
     "personalProjects": false,
     "certificates": false,
     "education": false,
-    "coreSkills": false,
+    "coreSkills": true,
     "references": false,
-    "softSkills": false,
+    "softSkills": true,
     "achievements": false,
-    "language": false
+    "language": true
   },
   "template": {
     "whitepaper": {
@@ -61,21 +71,21 @@
       ]
     },
     "classic": {
-      "blockSpace": 12,
+      "blockSpace": 10,
       "enablePicture": false,
-      "pictureSize": 100,
+      "pictureSize": 90,
       "bulletText": true,
       "inlineInformation": true,
       "sectionOrder": [
         "summary",
         "coreSkills",
+        "softSkills",
+        "knownLanguages",
         "workExperiences",
         "personalProjects",
         "certificates",
         "achievements",
-        "softSkills",
         "education",
-        "knownLanguages",
         "references"
       ]
     }

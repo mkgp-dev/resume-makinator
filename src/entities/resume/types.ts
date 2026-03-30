@@ -1,12 +1,12 @@
 import type { ActivePage } from "@/app/navigation"
 
-export type TemplateId = "whitepaper" | "classic"
+export type TemplateId = "whitepaper" | "classic" | "modern" | "modern-alt"
 
 export type PageSize = "A4" | "LETTER"
 
 export type FontStyle = "Lora" | "Playfair-Display" | "Helvetica" | "Montserrat"
 
-export type WhitepaperSectionKey =
+export type TemplateSectionKey =
   | "summary"
   | "coreSkills"
   | "workExperiences"
@@ -17,6 +17,8 @@ export type WhitepaperSectionKey =
   | "education"
   | "knownLanguages"
   | "references"
+
+export type WhitepaperSectionKey = TemplateSectionKey
 
 export type PersonalDetails = {
   fullName: string
@@ -113,26 +115,43 @@ export type Configuration = {
   pageSize: PageSize
 }
 
-export type WhitepaperTemplateConfig = {
+export type SharedTemplateConfig = {
   blockSpace: number
   enablePicture: boolean
   pictureSize: number
   bulletText: boolean
   inlineInformation: boolean
-  sectionOrder: WhitepaperSectionKey[]
+  sectionOrder: TemplateSectionKey[]
 }
 
-export type ClassicTemplateConfig = {
+export type WhitepaperTemplateConfig = SharedTemplateConfig
+
+export type ClassicTemplateConfig = SharedTemplateConfig
+
+export type ModernTemplateConfig = {
   blockSpace: number
+  enablePicture: boolean
+  pictureSize: number
   bulletText: boolean
-  enablePicture?: boolean
-  pictureSize?: number
-  inlineInformation?: boolean
+  accentColor: string
+  sidebarSections: TemplateSectionKey[]
+  mainSections: TemplateSectionKey[]
+}
+
+export type ModernAltTemplateConfig = {
+  blockSpace: number
+  enablePicture: boolean
+  pictureSize: number
+  bulletText: boolean
+  bannerColor: string
+  sectionOrder: TemplateSectionKey[]
 }
 
 export type TemplateConfig = {
   whitepaper: WhitepaperTemplateConfig
   classic: ClassicTemplateConfig
+  modern: ModernTemplateConfig
+  "modern-alt": ModernAltTemplateConfig
 }
 
 export type SectionItemMap = {

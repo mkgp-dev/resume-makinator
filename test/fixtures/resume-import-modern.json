@@ -1,0 +1,154 @@
+{
+  "activePage": "about",
+  "personalDetails": {
+    "fullName": "Dorothy Vaughan",
+    "jobTitle": "Programmer",
+    "defaultAddress": "Hampton, VA",
+    "defaultEmail": "dorothy@example.com",
+    "defaultPhoneNumber": "5552223344",
+    "socialGithub": "dorothyvaughan",
+    "socialLinkedin": "dorothy-vaughan",
+    "summary": "Led technical computing teams and early machine programming efforts.",
+    "profilePicture": "",
+    "knownLanguages": [
+      "English",
+      "Fortran"
+    ]
+  },
+  "education": [
+    {
+      "id": "edu-1",
+      "schoolName": "Wilberforce University",
+      "courseDegree": "B.A. Mathematics",
+      "startYear": "1925",
+      "endYear": "1929",
+      "currentEnrolled": false
+    }
+  ],
+  "references": [
+    {
+      "id": "ref-1",
+      "fullName": "Katherine Johnson",
+      "jobTitle": "Mathematician",
+      "companyName": "NASA",
+      "defaultPhoneNumber": "5551112233",
+      "defaultEmail": "katherine@example.com"
+    }
+  ],
+  "softSkills": [
+    "Leadership",
+    "Mentoring"
+  ],
+  "coreSkills": [
+    {
+      "id": "core-1",
+      "devLanguage": "Fortran",
+      "devFramework": [
+        "Scientific Computing"
+      ]
+    }
+  ],
+  "workExperiences": [
+    {
+      "id": "work-1",
+      "companyName": "NASA",
+      "jobTitle": "Supervisor",
+      "briefSummary": "Led the West Area Computing unit.",
+      "startYear": "1949",
+      "endYear": "1971",
+      "currentlyHired": false,
+      "bulletType": false,
+      "bulletSummary": []
+    }
+  ],
+  "personalProjects": [],
+  "certificates": [],
+  "achievements": [
+    {
+      "id": "ach-1",
+      "achievementName": "NASA Recognition",
+      "achievementIssuer": "NASA",
+      "yearIssued": "1961",
+      "achievementDescription": "Recognized for leadership in technical computing."
+    }
+  ],
+  "configuration": {
+    "template": "modern",
+    "fontStyle": "Lora",
+    "fontSize": 12,
+    "pageSize": "A4"
+  },
+  "enableInRender": {
+    "summary": true,
+    "workExperiences": true,
+    "personalProjects": false,
+    "certificates": false,
+    "education": true,
+    "coreSkills": true,
+    "references": true,
+    "softSkills": true,
+    "achievements": true,
+    "language": true
+  },
+  "template": {
+    "whitepaper": {
+      "blockSpace": 12,
+      "enablePicture": false,
+      "pictureSize": 100,
+      "bulletText": false,
+      "inlineInformation": true,
+      "sectionOrder": [
+        "summary",
+        "coreSkills",
+        "workExperiences",
+        "personalProjects",
+        "certificates",
+        "achievements",
+        "softSkills",
+        "education",
+        "knownLanguages",
+        "references"
+      ]
+    },
+    "classic": {
+      "blockSpace": 12,
+      "enablePicture": false,
+      "pictureSize": 100,
+      "bulletText": true,
+      "inlineInformation": true,
+      "sectionOrder": [
+        "summary",
+        "coreSkills",
+        "workExperiences",
+        "personalProjects",
+        "certificates",
+        "achievements",
+        "softSkills",
+        "education",
+        "knownLanguages",
+        "references"
+      ]
+    },
+    "modern": {
+      "blockSpace": 12,
+      "enablePicture": true,
+      "pictureSize": 88,
+      "bulletText": true,
+      "accentColor": "#1f4b99",
+      "sidebarSections": [
+        "summary",
+        "knownLanguages",
+        "softSkills",
+        "achievements",
+        "references"
+      ],
+      "mainSections": [
+        "coreSkills",
+        "workExperiences",
+        "personalProjects",
+        "certificates",
+        "education"
+      ]
+    }
+  }
+}
