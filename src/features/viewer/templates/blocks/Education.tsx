@@ -1,30 +1,33 @@
 import { View, Text, StyleSheet } from "@react-pdf/renderer"
-import type { EducationItem } from "@/entities/resume/types"
+import type { EducationItem, TemplateId } from "@/entities/resume/types"
 
 type EducationProps = {
     items: EducationItem[]
+    variant: TemplateId
 }
 
-export default function Education({ items }: EducationProps) {
+export default function Education({ items, variant }: EducationProps) {
+    const isClassic = variant === "classic"
+
     const styles = StyleSheet.create({
         container: {
-            marginBottom: 6,
+            marginBottom: isClassic ? 6 : 8,
         },
         header: {
             flexDirection: "row",
+            alignItems: isClassic ? "baseline" : "center",
             justifyContent: "space-between",
-            alignItems: "baseline",
+            gap: 2,
         },
         title: {
-            fontWeight: "bold",
+            fontWeight: isClassic ? "bold" : "semibold",
         },
         subheader: {
             color: "#6F6F7D",
-            fontSize: 10,
+            ...(isClassic ? { fontSize: 10 } : {}),
         },
         school: {
-            fontSize: 10,
-            marginTop: 1,
+            ...(isClassic ? { fontSize: 10, marginTop: 1 } : {}),
         },
         lastChild: {
             marginBottom: 0,
@@ -37,7 +40,7 @@ export default function Education({ items }: EducationProps) {
                 <Text style={styles.title}>{item.courseDegree}</Text>
                 <Text style={styles.subheader}>{item.startYear} - {item.endYear}</Text>
             </View>
-            {item.schoolName && <Text style={styles.school}>{item.schoolName}</Text>}
+            {item.schoolName ? <Text style={isClassic ? styles.school : styles.subheader}>{item.schoolName}</Text> : null}
         </View>
     ))
 }

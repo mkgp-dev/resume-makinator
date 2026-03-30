@@ -1,7 +1,8 @@
 import { useConfigurationHook } from "@/features/editor/hooks/useConfiguration"
 import Input from "@/shared/ui/Input"
 import Select from "@/shared/ui/Select"
-import WhitepaperSectionOrder from "@/features/editor/panels/WhitepaperSectionOrder"
+import ModernSectionLayout from "@/features/editor/panels/ModernSectionLayout"
+import TemplateSectionOrder from "@/features/editor/panels/TemplateSectionOrder"
 import { normalizeTemplateId } from "@/entities/resume/validation/template"
 import type { Configuration } from "@/entities/resume/types"
 
@@ -49,7 +50,11 @@ export default function PagePanel() {
             </div>
 
             <div className="flex flex-col">
-                {activeTemplateId === "whitepaper" ? <WhitepaperSectionOrder /> : null}
+                {activeTemplateId === "modern" ? (
+                    <ModernSectionLayout />
+                ) : (
+                    <TemplateSectionOrder templateId={activeTemplateId} />
+                )}
             </div>
         </div>
     )

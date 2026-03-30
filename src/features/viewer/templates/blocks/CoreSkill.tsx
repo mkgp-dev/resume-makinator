@@ -26,15 +26,13 @@ export default function CoreSkill({ items }: CoreSkillProps) {
 
     return (
         <View style={styles.row}>
-            {items.map((item, index) => (
-                <View key={index} style={styles.item}>
+            {items.map((item) => (
+                <View key={item.id} style={styles.item}>
                     <Text>
                         <Text style={styles.header}>{item.devLanguage}</Text>
                         <Text> – </Text>
                         <Text style={styles.subheader}>
-                            {Array.isArray(item.devFramework)
-                                ? item.devFramework.join(", ")
-                                : item.devFramework}
+                            {Array.isArray(item.devFramework) ? item.devFramework.join(", ") : item.devFramework}
                         </Text>
                     </Text>
                 </View>

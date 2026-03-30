@@ -23,7 +23,7 @@ export default function Section({ title, disableBorder, baseFontSize, children }
         lastItem: {
             paddingBottom: 0,
             borderBottomWidth: 0,
-            borderBottomColor: "none",
+            borderBottomColor: "transparent",
         },
     })
 

@@ -4,11 +4,11 @@ import Mail from "@/features/viewer/components/icons/Mail"
 import Phone from "@/features/viewer/components/icons/Phone"
 import Github from "@/features/viewer/components/icons/Github"
 import Linkedin from "@/features/viewer/components/icons/Linkedin"
-import type { PersonalDetails, WhitepaperTemplateConfig } from "@/entities/resume/types"
+import type { PersonalDetails, SharedTemplateConfig } from "@/entities/resume/types"
 
 type HeaderProps = {
     data: PersonalDetails
-    config: WhitepaperTemplateConfig
+    config: SharedTemplateConfig
     baseFontSize: number
 }
 
@@ -63,62 +63,52 @@ export default function Header({ data, config, baseFontSize }: HeaderProps) {
             <View style={styles.headerRow}>
                 <View style={styles.left}>
                     <Text style={styles.name}>{data.fullName}</Text>
-                    {data.jobTitle && <Text style={styles.title}>{data.jobTitle}</Text>}
+                    {data.jobTitle ? <Text style={styles.title}>{data.jobTitle}</Text> : null}
 
                     <View style={config.inlineInformation ? styles.row : styles.column}>
-                        {data.defaultAddress && (
+                        {data.defaultAddress ? (
                             <View style={styles.item}>
                                 <Home />
                                 <Text>{data.defaultAddress}</Text>
                             </View>
-                        )}
+                        ) : null}
 
-                        {data.defaultEmail && (
+                        {data.defaultEmail ? (
                             <View style={styles.item}>
                                 <Mail />
                                 <Text>{data.defaultEmail}</Text>
                             </View>
-                        )}
+                        ) : null}
 
-                        {data.defaultPhoneNumber && (
+                        {data.defaultPhoneNumber ? (
                             <View style={styles.item}>
                                 <Phone />
                                 <Text>+{data.defaultPhoneNumber}</Text>
                             </View>
-                        )}
+                        ) : null}
 
-                        {data.socialGithub && (
+                        {data.socialGithub ? (
                             <View style={styles.item}>
                                 <Github />
-                                <Link
-                                    src={`https://github.com/${data.socialGithub}`}
-                                    style={styles.link}
-                                >
+                                <Link src={`https://github.com/${data.socialGithub}`} style={styles.link}>
                                     {data.socialGithub}
                                 </Link>
                             </View>
-                        )}
+                        ) : null}
 
-                        {data.socialLinkedin && (
+                        {data.socialLinkedin ? (
                             <View style={styles.item}>
                                 <Linkedin />
-                                <Link
-                                    src={`https://www.linkedin.com/in/${data.socialLinkedin}`}
-                                    style={styles.link}
-                                >
+                                <Link src={`https://www.linkedin.com/in/${data.socialLinkedin}`} style={styles.link}>
                                     {data.socialLinkedin}
                                 </Link>
                             </View>
-                        )}
+                        ) : null}
                     </View>
                 </View>
 
-                {config.enablePicture && data.profilePicture && (
-                    <View style={{
-                        borderWidth: 1,
-                        borderStyle: "solid",
-                        borderColor: "#000000",
-                    }}>
+                {config.enablePicture && data.profilePicture ? (
+                    <View style={{ borderWidth: 1, borderStyle: "solid", borderColor: "#000000" }}>
                         <Image
                             src={data.profilePicture}
                             style={{
@@ -128,7 +118,7 @@ export default function Header({ data, config, baseFontSize }: HeaderProps) {
                             }}
                         />
                     </View>
-                )}
+                ) : null}
             </View>
         </View>
     )
