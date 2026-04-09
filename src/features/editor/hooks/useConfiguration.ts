@@ -2,6 +2,7 @@ import type { ChangeEvent } from "react"
 import type { Configuration, TemplateConfig } from "@/entities/resume/types"
 import { useInterfaceStore } from "@/shared/store/useInterfaceStore"
 import { useResumeStore } from "@/entities/resume/store/useResumeStore"
+import { createResumeImportData } from "@/entities/resume/lib/importExport"
 import { MAX_IMPORT_SIZE_BYTES, isJsonFile, validateImportData } from "@/entities/resume/validation/import"
 import { useShallow } from "zustand/react/shallow"
 
@@ -62,42 +63,8 @@ export function useConfigurationHook() {
         amendTemplate(section, key, next as TemplateConfig[K][TemplateNumberKey<K>])
     }
 
-    const getData = () => {
-        const {
-            activePage,
-            personalDetails,
-            education,
-            references,
-            softSkills,
-            coreSkills,
-            workExperiences,
-            personalProjects,
-            certificates,
-            achievements,
-            configuration,
-            enableInRender,
-            template,
-        } = useResumeStore.getState()
-
-        return {
-            activePage,
-            personalDetails,
-            education,
-            references,
-            softSkills,
-            coreSkills,
-            workExperiences,
-            personalProjects,
-            certificates,
-            achievements,
-            configuration,
-            enableInRender,
-            template,
-        }
-    }
-
     const exportData = () => {
-        const data = getData()
+        const data = createResumeImportData(useResumeStore.getState())
         const timestamp = Math.floor(Date.now() / 1000)
         const fileName = `resume-data-${timestamp}.json`
 
