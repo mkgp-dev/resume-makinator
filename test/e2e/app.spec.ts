@@ -61,6 +61,70 @@ test.describe("resume editor", () => {
     await expect(page.getByRole("textbox", { name: "Position (Optional)" })).toHaveValue("Computer Scientist")
   })
 
+  test("downloaded app data can be imported back into a newly created resume", async ({ page }, testInfo) => {
+    await page.goto("/")
+    await page.getByRole("button", { name: "Get started" }).click()
+    await page.getByRole("button", { name: "I understand" }).click()
+
+    await page.getByRole("button", { name: "Data" }).click()
+
+    const downloadPromise = page.waitForEvent("download", (download) =>
+      download.suggestedFilename().endsWith(".json"),
+    )
+    await page.getByRole("button", { name: "Download your data" }).click()
+
+    const download = await downloadPromise
+    const exportedPath = testInfo.outputPath("resume-roundtrip.json")
+    await download.saveAs(exportedPath)
+
+    await page.locator('input[type="file"]').setInputFiles(exportedPath)
+
+    await expect(page.getByRole("alert").filter({ hasText: "Data import completed without issues" })).toBeVisible()
+    await expect(page.getByRole("alert").filter({ hasText: "The selected file does not match the required format" })).toHaveCount(0)
+  })
+
+  test("downloaded app data restores a non-default template after reset and re-import", async ({ page }, testInfo) => {
+    await page.goto("/")
+    await page.getByRole("button", { name: "Get started" }).click()
+    await page.getByRole("button", { name: "I understand" }).click()
+
+    await page.getByRole("button", { name: "Configuration" }).click()
+    await page.getByLabel("Select your theme").click()
+    await page.getByText("Modern", { exact: true }).click()
+    await page.getByRole("checkbox", { name: "Enable bullets" }).click()
+    await expect(page.getByRole("checkbox", { name: "Enable bullets" })).toBeChecked()
+
+    await page.getByRole("button", { name: "Data" }).click()
+
+    const downloadPromise = page.waitForEvent("download", (download) =>
+      download.suggestedFilename().endsWith(".json"),
+    )
+    await page.getByRole("button", { name: "Download your data" }).click()
+
+    const download = await downloadPromise
+    const exportedPath = testInfo.outputPath("resume-modern-roundtrip.json")
+    await download.saveAs(exportedPath)
+
+    await page.getByRole("button", { name: "Reset everything" }).click()
+    await page.getByRole("button", { name: "Confirm" }).click()
+
+    await page.getByRole("button", { name: "Configuration" }).click()
+    await expect(page.getByRole("group").filter({
+      has: page.getByText("Select your theme", { exact: true }),
+    }).first()).toContainText("Simple Whitepaper")
+
+    await page.getByRole("button", { name: "Data" }).click()
+    await page.locator('input[type="file"]').setInputFiles(exportedPath)
+
+    await expect(page.getByRole("alert").filter({ hasText: "Data import completed without issues" })).toBeVisible()
+
+    await page.getByRole("button", { name: "Configuration" }).click()
+    await expect(page.getByRole("group").filter({
+      has: page.getByText("Select your theme", { exact: true }),
+    }).first()).toContainText("Modern")
+    await expect(page.getByRole("checkbox", { name: "Enable bullets" })).toBeChecked()
+  })
+
   test("classic template is selectable, exposes parity controls, and persists after reload", async ({ page }) => {
     await page.goto("/")
     await page.getByRole("button", { name: "Get started" }).click()
