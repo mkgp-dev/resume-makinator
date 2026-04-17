@@ -1,16 +1,16 @@
 import DataPanel from "@/features/editor/panels/DataPanel"
 import ResetPanel from "@/features/editor/panels/ResetPanel"
-import Card from "@/shared/ui/Card"
+import EditorSection from "@/shared/ui/EditorSection"
 
 export default function Data() {
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-8">
             <DataPanel />
 
-            <Card header="Reset">
+            <EditorSection title="Reset">
                 <ResetPanel />
-            </Card>
+            </EditorSection>
         </div>
     )
 }

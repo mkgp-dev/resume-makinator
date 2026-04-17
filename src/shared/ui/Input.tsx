@@ -29,11 +29,11 @@ export default function Input({
 
     return (
         <fieldset className={clsx(
-            "fieldset",
+            "fieldset gap-1.5",
             noPadding && "p-0",
         )}>
             {label ? (
-                <label htmlFor={inputId} className="fieldset-legend text-sm font-medium">
+                <label htmlFor={inputId} className="fieldset-legend text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
                     {label}
                 </label>
             ) : null}
@@ -48,9 +48,11 @@ export default function Input({
                 disabled={isDisabled}
                 onChange={onChange}
                 className={clsx(
-                    "bg-slate-800 border border-slate-600 outline-none shadow-none placeholder:text-slate-600",
+                    "editor-control min-h-11 text-sm",
                     isStretch && "w-full",
-                    type === "file" ? "file-input file:bg-slate-800 file:shadow-none" : "input",
+                    type === "file"
+                        ? "file-input w-full rounded-[var(--radius-field)] px-0 file:mr-4 file:border-0 file:border-r file:border-base-300 file:bg-base-300/70 file:px-4 file:text-sm file:font-medium file:text-slate-200"
+                        : "input rounded-[var(--radius-field)]",
                     type === "number" && "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0",
                 )}
             />

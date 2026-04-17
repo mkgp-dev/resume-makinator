@@ -1,5 +1,5 @@
 import { usePageHook } from "@/features/editor/hooks/usePage"
-import { Suspense, lazy, useEffect } from "react"
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
 import Tab from "@/widgets/layout/Tab"
 import Default from "@/widgets/layout/Default"
@@ -17,11 +17,66 @@ export default function App() {
   const { page, hasHydrated } = usePageHook()
   const hydrateNotice = useInterfaceStore(state => state.hydrateNotice)
   const setHydrateNotice = useInterfaceStore(state => state.setHydrateNotice)
+  const editorScrollRef = useRef<HTMLDivElement | null>(null)
+  const [scrollFadeState, setScrollFadeState] = useState({ top: false, bottom: false })
+  const scrollMaskClass = scrollFadeState.top && scrollFadeState.bottom
+    ? "editor-scroll-mask-both"
+    : scrollFadeState.top
+      ? "editor-scroll-mask-top"
+      : scrollFadeState.bottom
+        ? "editor-scroll-mask-bottom"
+        : ""
+
+  const syncEditorScrollFade = useCallback(() => {
+    const element = editorScrollRef.current
+    if (!element) return
+
+    const hasOverflow = element.scrollHeight > element.clientHeight + 2
+
+    setScrollFadeState({
+      top: hasOverflow && element.scrollTop > 2,
+      bottom: hasOverflow && element.scrollTop + element.clientHeight < element.scrollHeight - 2,
+    })
+  }, [])
 
   useEffect(() => {
     if (!hasHydrated) return
     document.title = getDocumentTitle(page)
   }, [hasHydrated, page])
+
+  useEffect(() => {
+    const element = editorScrollRef.current
+    if (!element) return
+
+    let animationFrameId = 0
+    const requestFadeSync = () => {
+      window.cancelAnimationFrame(animationFrameId)
+      animationFrameId = window.requestAnimationFrame(() => {
+        syncEditorScrollFade()
+      })
+    }
+
+    requestFadeSync()
+
+    const handleResize = () => requestFadeSync()
+    const resizeObserver = new ResizeObserver(() => requestFadeSync())
+    const mutationObserver = new MutationObserver(() => requestFadeSync())
+    const contentElement = element.firstElementChild
+
+    resizeObserver.observe(element)
+    if (contentElement instanceof HTMLElement) {
+      resizeObserver.observe(contentElement)
+    }
+    mutationObserver.observe(element, { childList: true, subtree: true })
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId)
+      resizeObserver.disconnect()
+      mutationObserver.disconnect()
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [page, syncEditorScrollFade])
 
   if (!hasHydrated) {
     return (
@@ -34,8 +89,8 @@ export default function App() {
   if (!page) return (<Default />)
 
   return (
-    <div className="flex min-h-screen max-h-screen overflow-hidden items-center justify-center">
-      <div className="container flex flex-col h-screen p-4 md:p-0">
+    <div className="editor-app-shell">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1700px] flex-col px-4 pb-5 pt-4 sm:px-6 lg:h-screen lg:gap-4 lg:pl-28 lg:pr-6 lg:pt-6 xl:pl-32">
         <PrivacyModal />
         <Toast
           items={
@@ -54,22 +109,41 @@ export default function App() {
           placement="top-end"
         />
         <Navigation active={page} />
-        <main className="mt-5 mb-5 grid grid-cols-1 md:grid-cols-[1.5fr_3.5fr] gap-4 flex-1 min-h-0">
-          <div className="overflow-y-auto pr-2 primary-scroll">
-            <Tab active={page} />
-          </div>
+        <main className="flex flex-1 flex-col gap-5 lg:min-h-0 lg:flex-row lg:gap-6">
+          <section className="editor-panel-surface relative overflow-hidden rounded-[0.65rem] px-4 py-4 sm:px-5 lg:min-h-0 lg:w-[min(44vw,37rem)] lg:flex-none lg:px-6 lg:py-5">
+            <div className="relative lg:h-full">
+              <div
+                className={`editor-scroll-fade editor-scroll-fade-top hidden lg:block ${scrollFadeState.top ? "opacity-100" : "opacity-0"}`}
+              />
+              <div
+                className={`editor-scroll-fade editor-scroll-fade-bottom hidden lg:block ${scrollFadeState.bottom ? "opacity-100" : "opacity-0"}`}
+              />
+              <div
+                ref={editorScrollRef}
+                onScroll={syncEditorScrollFade}
+                className={`primary-scroll overflow-visible lg:h-full lg:overflow-x-hidden lg:overflow-y-auto lg:pb-6 lg:pr-2 ${scrollMaskClass}`}
+              >
+                <Tab active={page} />
+              </div>
+            </div>
+          </section>
 
-          <Card noPadding={true} noRadius={true} isPreview={true}>
-            <Suspense
-              fallback={
-                <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                  L<span className="loading loading-spinner loading-lg text-primary" />
-                </div>
-              }
-            >
-              <Preview />
-            </Suspense>
-          </Card>
+          <section
+            data-testid="editor-preview-panel"
+            className="min-h-[24rem] flex-1 lg:min-h-0"
+          >
+            <Card noPadding={true} isPreview={true}>
+              <Suspense
+                fallback={
+                  <div className="flex h-full min-h-[24rem] items-center justify-center text-sm text-slate-500">
+                    L<span className="loading loading-spinner loading-lg text-primary" />
+                  </div>
+                }
+              >
+                <Preview />
+              </Suspense>
+            </Card>
+          </section>
         </main>
 
         <Footer />

@@ -26,10 +26,10 @@ export default function Tab({ active }: TabProps) {
     const ActiveTab = TAB_COMPONENTS[active]
 
     return (
-        <div key={active} className="animate-fade-in">
+        <div key={active} className="h-full animate-fade-in">
             <Suspense
                 fallback={(
-                    <div className="flex min-h-[12rem] items-center justify-center">
+                    <div className="flex h-full min-h-[18rem] items-center justify-center py-10">
                         <span className="loading loading-spinner loading-md text-primary" />
                     </div>
                 )}

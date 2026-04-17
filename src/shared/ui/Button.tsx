@@ -3,6 +3,7 @@ import type { MouseEventHandler, ReactNode } from "react"
 
 type ButtonVariant =
     | "default"
+    | "surface"
     | "transparent"
     | "dangerTransparent"
     | "sidebar"
@@ -22,6 +23,7 @@ type ButtonProps = {
     isDisabled?: boolean
     alignCenter?: boolean
     isStretch?: boolean
+    className?: string
 }
 
 export default function Button({
@@ -34,17 +36,19 @@ export default function Button({
     isDisabled = false,
     alignCenter = false,
     isStretch = false,
+    className,
 }: ButtonProps) {
     const styles = {
-        default: "btn-primary rounded-md",
-        transparent: "bg-transparent hover:text-sky-600 hover:shadow-none",
-        dangerTransparent: "bg-transparent hover:text-error hover:shadow-none",
-        sidebar: "bg-transparent hover:bg-slate-700 hover:shadow-none",
-        addBullet: "btn-primary btn-xs rounded-md hover:shadow-none",
-        entry: "bg-transparent text-2xl hover:text-primary hover:shadow-none",
-        warning: "btn-warning",
-        danger: "btn-error",
-        neutral: "btn-neutral",
+        default: "btn-primary border-primary/45",
+        surface: "border-slate-500/34 bg-base-200/38 text-base-content hover:border-slate-400/45 hover:bg-base-200/55",
+        transparent: "btn-ghost border-transparent bg-transparent text-slate-300 hover:bg-base-200/70 hover:text-base-content",
+        dangerTransparent: "btn-ghost border-transparent bg-transparent text-slate-400 hover:bg-error/10 hover:text-error",
+        sidebar: "border-transparent bg-transparent text-slate-400 hover:border-base-300 hover:bg-base-200/75 hover:text-base-content",
+        addBullet: "btn-sm border-base-300 bg-base-200/78 text-base-content hover:border-primary/35 hover:bg-base-200",
+        entry: "border-primary/45 bg-primary text-primary-content hover:bg-primary/90",
+        warning: "btn-warning border-warning/40",
+        danger: "btn-error border-error/40",
+        neutral: "btn-neutral border-neutral/40",
     }
 
     return (
@@ -52,12 +56,13 @@ export default function Button({
             type={type}
             onClick={onClick}
             className={clsx(
-                "btn border-none font-manrope font-light",
+                "btn rounded-[var(--radius-field)] border font-manrope font-medium normal-case tracking-[0.01em] shadow-none",
                 styles[variant],
                 icon && "flex gap-2",
-                alignCenter ? "items-center" : "justify-start",
-                iconOnly && "p-0",
+                alignCenter ? "justify-center" : "justify-start",
+                iconOnly && "btn-square px-0",
                 isStretch && "w-full",
+                className,
             )}
             disabled={isDisabled}
         >

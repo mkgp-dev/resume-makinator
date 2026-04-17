@@ -39,21 +39,23 @@ export default function WorkForm({ item }: WorkFormProps) {
                     onChange={event => modify("workExperiences", item.id, { bulletType: event.target.checked })}
                 />
             </div>
-            {!item.bulletType ? (
-                <Textarea
-                    label="Brief summary"
-                    rows={4}
-                    value={item.briefSummary}
-                    placeholder="Tell me something about your achievements or experiences"
-                    onChange={event => modify("workExperiences", item.id, { briefSummary: event.target.value })}
-                    isStretch={true}
-                />
-            ) : (
-                <BulletList
-                    items={item.bulletSummary}
-                    onChange={bulletSummary => modify("workExperiences", item.id, { bulletSummary })}
-                />
-            )}
+            <div key={item.bulletType ? "bullets" : "summary"} className="editor-panel-enter">
+                {!item.bulletType ? (
+                    <Textarea
+                        label="Brief summary"
+                        rows={4}
+                        value={item.briefSummary}
+                        placeholder="Tell me something about your achievements or experiences"
+                        onChange={event => modify("workExperiences", item.id, { briefSummary: event.target.value })}
+                        isStretch={true}
+                    />
+                ) : (
+                    <BulletList
+                        items={item.bulletSummary}
+                        onChange={bulletSummary => modify("workExperiences", item.id, { bulletSummary })}
+                    />
+                )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                 <Input

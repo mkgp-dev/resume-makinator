@@ -10,6 +10,10 @@ export default function Achievement() {
             header="Achievement"
             section="achievements"
             renderItem={item => <AchievementForm item={item} />}
+            getItemSummary={(item) => ({
+                title: item.achievementName || "Untitled achievement",
+                subtitle: item.achievementIssuer || undefined,
+            })}
             onClick={newAchievement}
         />
     )

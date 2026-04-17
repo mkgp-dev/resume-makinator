@@ -63,8 +63,8 @@ export default function TemplatePanel() {
     }, [activeTemplateId, config.template, updateConfig])
 
     return (
-        <div className="grid grid-cols-1 xl:grid-cols-2 xl:gap-4">
-            <div className="flex flex-col">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:gap-5">
+            <div className="flex flex-col gap-3">
                 <Select
                     label="Select your theme"
                     value={activeTemplateId}
@@ -72,13 +72,14 @@ export default function TemplatePanel() {
                     onChange={value => updateConfig("template", value as Configuration["template"])}
                 />
 
-                <div className="mt-3 space-y-2">
+                <div className="space-y-2">
                     {activeTemplate && (
                         <>
                             {capabilities.picture ? (
                                 <Checkbox
                                     label="Enable profile picture"
                                     isChecked={activeTemplate.enablePicture}
+                                    variant="framed"
                                     onChange={event => amendTemplate(activeTemplateId, "enablePicture", event.target.checked)}
                                 />
                             ) : null}
@@ -87,6 +88,7 @@ export default function TemplatePanel() {
                                 <Checkbox
                                     label="Enable bullets"
                                     isChecked={activeTemplate.bulletText}
+                                    variant="framed"
                                     onChange={event => amendTemplate(activeTemplateId, "bulletText", event.target.checked)}
                                 />
                             ) : null}
@@ -95,6 +97,7 @@ export default function TemplatePanel() {
                                 <Checkbox
                                     label="Inline information"
                                     isChecked={inlineTemplate?.inlineInformation}
+                                    variant="framed"
                                     onChange={event => {
                                         if (!supportsInlineInformation) return
                                         amendTemplate(activeTemplateId, "inlineInformation", event.target.checked)
@@ -130,17 +133,17 @@ export default function TemplatePanel() {
 
                         {capabilities.accentColor && colorField ? (
                             <fieldset className="fieldset">
-                                <label className="fieldset-legend text-sm font-medium" htmlFor="template-color">
+                                <label className="fieldset-legend text-xs font-medium uppercase tracking-[0.18em] text-slate-400" htmlFor="template-color">
                                     {colorField.label}
                                 </label>
-                                <div className="flex flex-wrap items-center gap-3 rounded-md border border-slate-600 bg-slate-800 px-3 py-3">
+                                <div className="flex flex-wrap items-center gap-3 rounded-[0.35rem] border border-base-300 bg-base-200/65 px-3 py-3">
                                     <input
                                         id="template-color"
                                         type="color"
                                         aria-label={colorField.label}
                                         value={colorField.value}
                                         onChange={event => colorField.onChange(event.target.value)}
-                                        className="h-10 w-14 shrink-0 cursor-pointer rounded border border-slate-500 bg-transparent p-1"
+                                        className="h-10 w-14 shrink-0 cursor-pointer rounded-[0.25rem] border border-base-300 bg-transparent p-1"
                                     />
                                     <div className="min-w-0 flex-1">
                                         <div className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Selected</div>

@@ -25,11 +25,11 @@ export default function Textarea({
 
     return (
         <fieldset className={clsx(
-            "fieldset",
+            "fieldset gap-1.5",
             isFlex && "flex-1",
         )}>
             {label ? (
-                <label htmlFor={textareaId} className="fieldset-legend text-sm font-medium">
+                <label htmlFor={textareaId} className="fieldset-legend text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
                     {label}
                 </label>
             ) : null}
@@ -41,7 +41,7 @@ export default function Textarea({
                 aria-label={label}
                 onChange={onChange}
                 className={clsx(
-                    "textarea bg-slate-800 border border-slate-600 shadow-none outline-none resize-none placeholder:text-slate-600",
+                    "editor-control textarea min-h-24 resize-none rounded-[var(--radius-field)] text-sm",
                     isStretch && "w-full",
                 )}
             />

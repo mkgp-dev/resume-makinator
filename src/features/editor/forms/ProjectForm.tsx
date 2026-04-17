@@ -46,22 +46,24 @@ export default function ProjectForm({ item }: ProjectFormProps) {
                     onChange={event => modify("personalProjects", item.id, { bulletType: event.target.checked })}
                 />
             </div>
-            {!item.bulletType ? (
-                <Textarea
-                    label="Brief summary"
-                    rows={4}
-                    value={item.briefSummary}
-                    placeholder="A brief description of your project"
-                    onChange={event => modify("personalProjects", item.id, { briefSummary: event.target.value })}
-                    isStretch={true}
-                />
-            ) : (
-                <BulletList
-                    items={item.bulletSummary}
-                    onChange={bulletSummary => modify("personalProjects", item.id, { bulletSummary })}
-                    placeholder="List of your project's highlights"
-                />
-            )}
+            <div key={item.bulletType ? "bullets" : "summary"} className="editor-panel-enter">
+                {!item.bulletType ? (
+                    <Textarea
+                        label="Brief summary"
+                        rows={4}
+                        value={item.briefSummary}
+                        placeholder="A brief description of your project"
+                        onChange={event => modify("personalProjects", item.id, { briefSummary: event.target.value })}
+                        isStretch={true}
+                    />
+                ) : (
+                    <BulletList
+                        items={item.bulletSummary}
+                        onChange={bulletSummary => modify("personalProjects", item.id, { bulletSummary })}
+                        placeholder="List of your project's highlights"
+                    />
+                )}
+            </div>
         </div>
     )
 }

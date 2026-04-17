@@ -27,7 +27,7 @@ export default function Alert({
         <div
             role="alert"
             className={clsx(
-                "alert rounded-md animate-fade-in",
+                "alert animate-fade-in rounded-[var(--radius-field)] border border-base-300/70",
                 styles[variant],
                 isSoft && "alert-soft",
             )}

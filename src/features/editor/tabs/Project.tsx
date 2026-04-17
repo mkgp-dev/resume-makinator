@@ -10,6 +10,10 @@ export default function Project() {
             header="Personal Project"
             section="personalProjects"
             renderItem={item => <ProjectForm item={item} />}
+            getItemSummary={(item) => ({
+                title: item.projectName || "Untitled project",
+                subtitle: item.projectSubtitle || undefined,
+            })}
             onClick={newProject}
         />
     )

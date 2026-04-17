@@ -10,6 +10,7 @@ import {
     normalizeModernSectionZones,
 } from "@/entities/resume/lib/templateSections"
 import { useConfigurationHook } from "@/features/editor/hooks/useConfiguration"
+import { useResumeStore } from "@/entities/resume/store/useResumeStore"
 import type { DragEndEvent, DragOverEvent, UniqueIdentifier } from "@dnd-kit/core"
 import type { TemplateSectionKey } from "@/entities/resume/types"
 
@@ -31,6 +32,19 @@ type SectionColumnProps = {
 type SectionZones = {
     sidebar: TemplateSectionKey[]
     main: TemplateSectionKey[]
+}
+
+const updateModernZones = (nextZones: SectionZones) => {
+    useResumeStore.setState((state) => ({
+        template: {
+            ...state.template,
+            modern: {
+                ...state.template.modern,
+                sidebarSections: nextZones.sidebar,
+                mainSections: nextZones.main,
+            },
+        },
+    }))
 }
 
 function SortableSectionItem({ id, container, onMove }: SortableSectionItemProps) {
@@ -62,11 +76,11 @@ function SortableSectionItem({ id, container, onMove }: SortableSectionItemProps
             {...attributes}
             {...listeners}
             className={clsx(
-                "card flex min-w-0 cursor-grab flex-row items-start gap-3 rounded-md border border-slate-600/70 bg-slate-700/90 px-3 py-2 active:cursor-grabbing",
+                "flex min-w-0 cursor-grab flex-row items-start gap-3 rounded-[0.35rem] border border-base-300/70 bg-base-200/55 px-3 py-2 active:cursor-grabbing",
                 isDragging ? "opacity-80" : "opacity-100",
             )}
         >
-            <div className="pt-0.5 text-slate-300 hover:text-sky-400">
+            <div className="pt-0.5 text-slate-400 hover:text-primary">
                 <Bars3Icon className="size-5" />
             </div>
             <span className="min-w-0 flex-1 text-sm font-medium leading-tight text-slate-200">
@@ -74,7 +88,7 @@ function SortableSectionItem({ id, container, onMove }: SortableSectionItemProps
             </span>
             <button
                 type="button"
-                className="ml-auto shrink-0 rounded border border-slate-500/80 px-2 py-1 text-[11px] font-medium text-slate-200 hover:border-sky-400 hover:text-sky-300"
+                className="ml-auto shrink-0 rounded-[0.25rem] border border-base-300 px-2 py-1 text-[11px] font-medium text-slate-200 hover:border-primary/45 hover:text-slate-50"
                 onPointerDown={(event) => event.stopPropagation()}
                 onMouseDown={(event) => event.stopPropagation()}
                 onClick={(event) => {
@@ -104,7 +118,7 @@ function SectionColumn({ container, label, items, onMove }: SectionColumnProps) 
             <div
                 ref={setNodeRef}
                 data-testid={`modern-${container}-sections`}
-                className={clsx("space-y-2", isOver && "rounded-md bg-slate-800/60")}
+                className={clsx("space-y-2 rounded-[0.35rem] border border-base-300/60 bg-base-200/25 p-2", isOver && "bg-base-200/55")}
             >
                 <SortableContext items={items} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2">
@@ -119,7 +133,7 @@ function SectionColumn({ container, label, items, onMove }: SectionColumnProps) 
 }
 
 export default function ModernSectionLayout() {
-    const { template, amendTemplate } = useConfigurationHook()
+    const { template } = useConfigurationHook()
     const sensors = useSensors(useSensor(MouseSensor))
     const normalizedZones = normalizeModernSectionZones(
         template.modern.sidebarSections,
@@ -135,10 +149,9 @@ export default function ModernSectionLayout() {
             normalizedZones.sidebar,
             normalizedZones.main,
         )) {
-            amendTemplate("modern", "sidebarSections", normalizedZones.sidebar)
-            amendTemplate("modern", "mainSections", normalizedZones.main)
+            updateModernZones(normalizedZones)
         }
-    }, [template.modern.sidebarSections, template.modern.mainSections, normalizedZones, amendTemplate])
+    }, [template.modern.sidebarSections, template.modern.mainSections, normalizedZones])
 
     const findContainer = (id: UniqueIdentifier, currentZones: SectionZones): SectionZone | null => {
         if (id === "sidebar" || id === "main") return id
@@ -180,8 +193,7 @@ export default function ModernSectionLayout() {
     }
 
     const persistZones = (nextZones: SectionZones) => {
-        amendTemplate("modern", "sidebarSections", nextZones.sidebar)
-        amendTemplate("modern", "mainSections", nextZones.main)
+        updateModernZones(nextZones)
     }
 
     const moveSection = (id: TemplateSectionKey, container: SectionZone) => {
@@ -256,10 +268,10 @@ export default function ModernSectionLayout() {
     }
 
     return (
-        <fieldset className="fieldset border border-slate-600 p-2 md:h-full" aria-label="Section layout">
-            <legend className="fieldset-legend text-sm font-normal">Section layout</legend>
+        <fieldset className="fieldset rounded-[0.35rem] border border-base-300/70 p-3 md:h-full" aria-label="Section layout">
+            <legend className="fieldset-legend text-xs font-medium uppercase tracking-[0.18em] text-slate-400">Section layout</legend>
             <span className="text-xs text-slate-400">
-                Drag sections between the sidebar and the main content area, or use the move action inside each card.
+                Drag sections between the sidebar and the main content area, or use the move action inside each row.
             </span>
 
             <DndContext

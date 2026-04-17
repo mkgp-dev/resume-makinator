@@ -1,11 +1,11 @@
 import AboutForm from "@/features/editor/forms/AboutForm"
-import Card from "@/shared/ui/Card"
+import EditorSection from "@/shared/ui/EditorSection"
 
 export default function About() {
 
     return (
-        <Card header="About you">
+        <EditorSection title="About you">
             <AboutForm />
-        </Card>
+        </EditorSection>
     )
 }

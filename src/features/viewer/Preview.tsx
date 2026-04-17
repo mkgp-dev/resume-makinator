@@ -103,18 +103,25 @@ export default function Preview() {
 
     useEffect(() => {
         if (!isDesktopPreview) return
-        void generateDocument(debouncedData)
+
+        const frameId = window.requestAnimationFrame(() => {
+            void generateDocument(debouncedData)
+        })
+
+        return () => {
+            window.cancelAnimationFrame(frameId)
+        }
     }, [debouncedData, isDesktopPreview])
 
     const src = pdfUrl ? `${pdfUrl}#view=Fit` : undefined
 
     return (
         <>
-            <div className="hidden h-full md:block">
+            <div className="hidden h-full min-h-[24rem] overflow-hidden md:block">
                 <iframe
                     src={src}
                     title="Resume Preview"
-                    className="h-full w-full border-0"
+                    className="block h-full min-h-[24rem] w-full border-0 bg-white"
                 />
             </div>
 

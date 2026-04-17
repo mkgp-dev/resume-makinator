@@ -25,19 +25,19 @@ export default function Card({
 
     return (
         <div className={clsx(
-            "card bg-slate-700/90 border border-slate-600/70 rounded-lg w-full",
-            isPreview && "md:h-full",
-            noRadius && "rounded-none",
+            "w-full border border-base-300/80 bg-base-200/72 shadow-[0_20px_60px_rgba(2,6,23,0.35)] backdrop-blur-xl",
+            isPreview && "h-full",
+            noRadius ? "rounded-none" : "rounded-[0.35rem]",
         )}>
-            <div className={clsx("card-body", noPadding && "p-0")}>
+            <div className={clsx("card-body gap-4", noPadding ? "h-full p-0" : "p-4 sm:p-5")}>
                 {btnEnable ? (
                     <div className="flex items-center justify-between">
-                        {header && <h2 className="font-manrope text-2xl font-semibold">{header}</h2>}
+                        {header && <h2 className="font-manrope text-xl font-semibold">{header}</h2>}
                         {btnEnable && <Button variant="transparent" icon={<PlusCircleIcon className="size-7" />} iconOnly={true} onClick={btnClick} />}
                     </div>
                 ) : (
                     <>
-                        {header && <h2 className="font-manrope text-2xl font-semibold">{header}</h2>}
+                        {header && <h2 className="font-manrope text-xl font-semibold">{header}</h2>}
                     </>
                 )}
 

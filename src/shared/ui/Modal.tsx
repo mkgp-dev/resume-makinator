@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { forwardRef } from "react"
-import type { ReactEventHandler, ReactNode } from "react"
+import type { MouseEventHandler, ReactEventHandler, ReactNode } from "react"
 
 type ModalProps = {
     id?: string
@@ -18,31 +18,40 @@ const Modal = forwardRef<HTMLDialogElement, ModalProps>(({
     actions,
     allowOutsideClick = false,
     onCancel,
-}, ref) => (
+}, ref) => {
+    const handleBackdropClick: MouseEventHandler<HTMLDialogElement> = (event) => {
+        if (!allowOutsideClick) return
+        if (event.target !== event.currentTarget) return
+        event.currentTarget.close()
+        window.requestAnimationFrame(() => {
+            if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+        })
+    }
+
+    return (
     <dialog
         {...(id && { id: id })}
         ref={ref}
         {...(onCancel && { onCancel: onCancel })}
-        className="modal rounded-md select-none"
+        onClick={handleBackdropClick}
+        className="fixed inset-0 z-50 m-0 hidden h-full max-h-none w-full max-w-none items-center justify-center overflow-hidden border-0 bg-slate-950/72 p-4 text-base-content backdrop:bg-slate-950/72 backdrop:backdrop-blur-sm open:flex open:animate-fade-in"
     >
         <div className={clsx(
-            "modal-box bg-slate-800",
+            "animate-modal-in w-full rounded-[0.55rem] border border-slate-500/28 bg-base-200/96 text-base-content shadow-[0_30px_90px_rgba(2,6,23,0.58)] backdrop-blur-xl",
             size === "sm" && "max-w-sm",
             size === "md" && "max-w-md",
             size === "lg" && "max-w-lg",
         )}>
-            {content}
-            <div className="modal-action">
+            <div className="p-5 sm:p-6">
+                {content}
+            </div>
+            <div className="modal-action border-t border-slate-500/18 bg-slate-950/12 px-5 py-4 sm:px-6">
                 {actions}
             </div>
         </div>
-        {allowOutsideClick && (
-            <form method="dialog" className="modal-backdrop">
-                <button className="cursor-default" />
-            </form>
-        )}
     </dialog>
-))
+    )
+})
 
 Modal.displayName = "Modal"
 

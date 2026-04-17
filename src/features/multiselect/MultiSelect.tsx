@@ -1,11 +1,11 @@
-import { useId, useState } from "react"
+import { useId, useMemo, useState } from "react"
 import type { KeyboardEvent } from "react"
 import { LANGUAGE_OPTIONS } from "@/features/multiselect/constants/Languages"
 import { SOFT_SKILL_OPTIONS } from "@/features/multiselect/constants/SoftSkills"
 import { FRAMEWORK_OPTIONS } from "@/features/multiselect/constants/Frameworks"
 import { DEV_LANGUAGE_OPTIONS } from "@/features/multiselect/constants/DevLanguages"
 import { components } from "react-select"
-import type { MultiValue, OnChangeValue, OptionProps, PropsValue } from "react-select"
+import type { InputActionMeta, MultiValue, OnChangeValue, OptionProps, PropsValue } from "react-select"
 import CreatableSelect from "react-select/creatable"
 import clsx from "clsx"
 
@@ -119,29 +119,40 @@ export default function MultiSelect({
         }
     }
 
-    const checkBoxOption = (props: OptionProps<Option, boolean>) => {
-        const { isSelected } = props
-        return (
-            <SelectOption {...props}>
-                <div className="flex items-center gap-2">
-                    {allowMultiple && (
-                        <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => null}
-                            className="checkbox checkbox-xs rounded-sm shadow-none bg-slate-700/90 border border-slate-600/70 checked:bg-primary checked:text-black"
-                        />
-                    )}
-                    <span>{props.label}</span>
-                </div>
-            </SelectOption>
-        )
-    }
+    const checkBoxOption = useMemo(() => {
+        return function CheckboxOption(props: OptionProps<Option, boolean>) {
+            const { isSelected } = props
+            return (
+                <SelectOption {...props}>
+                    <div className="flex items-center gap-2">
+                        {allowMultiple && (
+                            <span
+                                aria-hidden="true"
+                                className={clsx(
+                                    "flex h-4 w-4 shrink-0 items-center justify-center rounded-[0.2rem] border bg-base-100 transition-colors duration-150",
+                                    isSelected
+                                        ? "border-primary bg-primary text-primary-content"
+                                        : "border-base-300 text-transparent",
+                                )}
+                            >
+                                <span className="text-[10px] leading-none">✓</span>
+                            </span>
+                        )}
+                        <span>{props.label}</span>
+                    </div>
+                </SelectOption>
+            )
+        }
+    }, [allowMultiple])
+
+    const selectComponents = useMemo(() => ({
+        Option: checkBoxOption,
+    }), [checkBoxOption])
 
     return (
-        <fieldset className="fieldset">
+        <fieldset className="fieldset gap-1.5">
             {label ? (
-                <label htmlFor={inputId} className="fieldset-legend text-sm font-medium">
+                <label htmlFor={inputId} className="fieldset-legend text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
                     {label}
                 </label>
             ) : null}
@@ -153,39 +164,62 @@ export default function MultiSelect({
                 value={currentValue}
                 options={filteredOptions}
                 inputValue={input}
-                onInputChange={setInput}
+                onInputChange={(nextValue: string, meta: InputActionMeta) => {
+                    if (meta.action === "input-change") {
+                        setInput(nextValue)
+                    }
+
+                    if (meta.action === "menu-close") {
+                        setInput("")
+                    }
+                }}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
+                openMenuOnFocus
+                openMenuOnClick
                 closeMenuOnSelect={!allowMultiple}
                 hideSelectedOptions={!allowMultiple}
-                components={{
-                    Option: checkBoxOption,
+                blurInputOnSelect={!allowMultiple}
+                isValidNewOption={(inputValue, selectValue, selectOptions) => {
+                    const normalized = inputValue.trim().toLowerCase()
+                    if (!normalized) return false
+
+                    const getNormalizedLabel = (option: { label?: string; value?: string }) =>
+                        String(option.label ?? option.value ?? "").toLowerCase()
+
+                    const existsInOptions = selectOptions.some(option => getNormalizedLabel(option) === normalized)
+                    const existsInValue = selectValue.some(option => getNormalizedLabel(option) === normalized)
+
+                    return !existsInOptions && !existsInValue
                 }}
+                components={selectComponents}
                 getOptionValue={(option) => option.label}
                 getOptionLabel={(option) => option.label}
                 classNames={{
-                    control: () => "input h-full bg-slate-800 border border-slate-600 shadow-none outline-none w-full",
-                    placeholder: () => "text-slate-600 text-sm",
-                    valueContainer: () => "flex flex-wrap gap-1 py-3",
-                    multiValue: () => "flex items-center gap-1 rounded-sm bg-primary px-2 py-0.5",
-                    multiValueLabel: () => "text-xs text-black",
-                    multiValueRemove: () => "text-black hover:bg-transparent cursor-pointer",
-                    menu: () => "mt-1 w-full rounded-md border border-slate-600 bg-slate-800 shadow-lg",
+                    control: () => "editor-control flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-field)] border-slate-500/55 px-3",
+                    placeholder: () => "m-0 text-sm leading-none text-slate-500",
+                    valueContainer: () => "flex min-h-11 flex-1 flex-wrap content-center items-center gap-1 py-0",
+                    input: () => "m-0 p-0 text-sm leading-none text-slate-100",
+                    singleValue: () => "m-0 text-sm leading-none text-slate-100",
+                    multiValue: () => "flex items-center gap-1 rounded-[0.2rem] bg-primary/18 px-2 py-0.5",
+                    multiValueLabel: () => "text-xs text-slate-100",
+                    multiValueRemove: () => "cursor-pointer text-slate-100 hover:bg-transparent",
+                    menu: () => "mt-1 w-full rounded-[var(--radius-field)] border border-slate-500/55 bg-base-200 shadow-xl",
                     option: ({ isFocused }) =>
                         clsx(
                             "cursor-pointer px-3 py-1.5 text-sm",
-                            isFocused && "bg-primary text-black",
+                            isFocused && "bg-primary/18 text-slate-100",
                         ),
-                    noOptionsMessage: () => "px-3 py-2 text-sm text-slate-500 bg-slate-800 border border-dashed border-slate-600 rounded-md",
-                    indicatorsContainer: () => "flex items-center gap-1",
+                    noOptionsMessage: () => "rounded-[var(--radius-field)] border border-dashed border-slate-500/55 bg-base-200 px-3 py-2 text-sm text-slate-500",
+                    indicatorsContainer: () => "flex h-11 shrink-0 items-center justify-center self-stretch border-l border-slate-500/55 pl-2",
                     clearIndicator: () => "p-1 text-slate-400 hover:text-error",
                     dropdownIndicator: ({ isFocused }) =>
                         clsx(
-                            "p-1 rounded-md hover:text-primary",
-                            isFocused ? "text-primary" : "text-slate-400",
+                            "flex h-full items-center justify-center px-1.5 text-slate-300 hover:text-slate-50",
+                            isFocused && "text-primary",
                         ),
-                    indicatorSeparator: () => "bg-slate-600",
+                    indicatorSeparator: () => "hidden",
                 }}
             />
         </fieldset>

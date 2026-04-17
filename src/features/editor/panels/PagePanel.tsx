@@ -24,7 +24,7 @@ export default function PagePanel() {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-3">
                 <Select
                     label="Paper size"
                     value={config.pageSize}
