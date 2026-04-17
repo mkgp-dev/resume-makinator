@@ -10,6 +10,10 @@ export default function Work() {
             header="Work Experience"
             section="workExperiences"
             renderItem={item => <WorkForm item={item} />}
+            getItemSummary={(item) => ({
+                title: item.jobTitle || "Untitled work experience",
+                subtitle: item.companyName || undefined,
+            })}
             onClick={newWork}
         />
     )

@@ -10,6 +10,10 @@ export default function Certificate() {
             header="Certificate"
             section="certificates"
             renderItem={item => <CertificateForm item={item} />}
+            getItemSummary={(item) => ({
+                title: item.certificateName || "Untitled certificate",
+                subtitle: item.certificateIssuer || undefined,
+            })}
             onClick={newCertificate}
         />
     )

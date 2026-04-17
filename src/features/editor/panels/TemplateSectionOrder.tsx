@@ -47,14 +47,14 @@ function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemPr
             ref={setNodeRef}
             style={style}
             className={clsx(
-                "card flex flex-row items-center gap-3 rounded-md border border-slate-600/70 bg-slate-700/90 px-3 py-2",
+                "flex flex-row items-center gap-3 rounded-[0.35rem] border border-base-300/70 bg-base-200/55 px-3 py-2",
                 isDragging ? "opacity-80" : "opacity-100",
             )}
         >
             <div
                 {...attributes}
                 {...listeners}
-                className="cursor-grab text-slate-300 hover:text-sky-400 active:cursor-grabbing"
+                className="cursor-grab text-slate-400 hover:text-primary active:cursor-grabbing"
             >
                 <Bars3Icon className="size-5" />
             </div>
@@ -63,7 +63,7 @@ function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemPr
                 <input
                     type="checkbox"
                     checked={isEnabled}
-                    className="toggle toggle-xs"
+                    className="toggle toggle-sm border-2 border-slate-500/70 bg-slate-950/75 text-white checked:border-primary checked:bg-primary"
                     onChange={onToggle}
                 />
             </div>
@@ -96,15 +96,15 @@ export default function TemplateSectionOrder({ templateId }: TemplateSectionOrde
     }
 
     return (
-        <fieldset className="fieldset border border-slate-600 p-2 md:h-full">
-            <legend className="fieldset-legend text-sm font-normal">Modify components</legend>
-            <span className="text-xs text-slate-400">Drag to reorder and toggle to enable.</span>
+        <fieldset className="fieldset rounded-[0.45rem] border border-slate-500/36 bg-base-200/22 p-4 md:h-full">
+            <legend className="fieldset-legend px-1 text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Modify components</legend>
+            <span className="text-sm text-slate-400">Drag to reorder and toggle to enable.</span>
 
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={normalizedOrder} strategy={verticalListSortingStrategy}>
-                    <div className="mt-2 space-y-2">
+                    <div className="mt-3 space-y-2">
                         {normalizedOrder.length === 0 ? (
-                            <div className="rounded-md border border-dashed border-slate-600/70 bg-slate-800/70 px-3 py-6 text-center text-sm text-slate-400">
+                            <div className="rounded-[0.35rem] border border-dashed border-slate-500/36 bg-base-200/45 px-3 py-6 text-center text-sm text-slate-400">
                                 No sections available.
                             </div>
                         ) : (

@@ -10,6 +10,10 @@ export default function Reference() {
             header="Reference"
             section="references"
             renderItem={item => <ReferenceForm item={item} />}
+            getItemSummary={(item) => ({
+                title: item.fullName || "Untitled reference",
+                subtitle: item.companyName || item.jobTitle || undefined,
+            })}
             onClick={newReference}
         />
     )

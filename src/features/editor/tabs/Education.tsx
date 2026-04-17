@@ -10,6 +10,10 @@ export default function Education() {
             header="Education"
             section="education"
             renderItem={item => <EducationForm item={item} />}
+            getItemSummary={(item) => ({
+                title: item.courseDegree || "Untitled education",
+                subtitle: item.schoolName || undefined,
+            })}
             onClick={newEducation}
         />
     )
