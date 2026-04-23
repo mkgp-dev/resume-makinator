@@ -197,22 +197,22 @@ export default function MultiSelect({
                 getOptionValue={(option) => option.label}
                 getOptionLabel={(option) => option.label}
                 classNames={{
-                    control: () => "editor-control flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-field)] border-slate-500/55 px-3",
+                    control: () => "editor-control flex min-h-11 w-full items-stretch gap-2 rounded-[var(--radius-field)] px-3 py-2",
                     placeholder: () => "m-0 text-sm leading-none text-slate-500",
-                    valueContainer: () => "flex min-h-11 flex-1 flex-wrap content-center items-center gap-1 py-0",
+                    valueContainer: () => "flex min-h-8 flex-1 flex-wrap content-center items-center gap-1.5 py-0",
                     input: () => "m-0 p-0 text-sm leading-none text-slate-100",
                     singleValue: () => "m-0 text-sm leading-none text-slate-100",
-                    multiValue: () => "flex items-center gap-1 rounded-[0.2rem] bg-primary/18 px-2 py-0.5",
+                    multiValue: () => "flex items-center gap-1 rounded-[0.2rem] bg-sky-300/16 px-2 py-0.5 ring-1 ring-sky-200/10",
                     multiValueLabel: () => "text-xs text-slate-100",
                     multiValueRemove: () => "cursor-pointer text-slate-100 hover:bg-transparent",
-                    menu: () => "mt-1 w-full rounded-[var(--radius-field)] border border-slate-500/55 bg-base-200 shadow-xl",
+                    menu: () => "mt-1 w-full rounded-[var(--radius-field)] border border-slate-500/38 bg-slate-900/96 shadow-xl backdrop-blur-xl",
                     option: ({ isFocused }) =>
                         clsx(
                             "cursor-pointer px-3 py-1.5 text-sm",
                             isFocused && "bg-primary/18 text-slate-100",
                         ),
-                    noOptionsMessage: () => "rounded-[var(--radius-field)] border border-dashed border-slate-500/55 bg-base-200 px-3 py-2 text-sm text-slate-500",
-                    indicatorsContainer: () => "flex h-11 shrink-0 items-center justify-center self-stretch border-l border-slate-500/55 pl-2",
+                    noOptionsMessage: () => "rounded-[var(--radius-field)] border border-dashed border-slate-500/38 bg-slate-900/55 px-3 py-2 text-sm text-slate-500",
+                    indicatorsContainer: () => "flex min-h-8 shrink-0 items-center justify-center self-stretch border-l border-slate-500/34 pl-2",
                     clearIndicator: () => "p-1 text-slate-400 hover:text-error",
                     dropdownIndicator: ({ isFocused }) =>
                         clsx(

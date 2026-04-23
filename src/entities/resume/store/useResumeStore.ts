@@ -85,6 +85,7 @@ const INITIAL_STATE: ResumeData & {
         fontStyle: "Lora",
         fontSize: 12,
         pageSize: "A4",
+        pollinationsApiKey: "",
     },
     enableInRender: {
         summary: true,
@@ -224,6 +225,9 @@ export const useResumeStore = create<ResumeStore>()(
                         configuration: {
                             ...currentState.configuration,
                             ...configuration,
+                            pollinationsApiKey: typeof configuration.pollinationsApiKey === "string"
+                                ? configuration.pollinationsApiKey
+                                : currentState.configuration.pollinationsApiKey,
                         },
                         enableInRender: {
                             ...currentState.enableInRender,

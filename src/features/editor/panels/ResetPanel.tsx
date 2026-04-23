@@ -10,7 +10,7 @@ export default function ResetPanel() {
             <div className="flex flex-col gap-1">
                 <Button
                     variant="danger"
-                    text="Reset everything"
+                    text="Reset"
                     icon={<TrashIcon className="size-5" />}
                     onClick={() => {
                         const dialog = document.getElementById(id) as HTMLDialogElement | null

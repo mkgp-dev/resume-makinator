@@ -34,7 +34,7 @@ export default function ResetModal() {
                         <div className="space-y-2">
                             <h3 className="font-manrope text-xl font-semibold text-slate-50">Reset everything?</h3>
                             <p className="text-sm leading-6 text-slate-300">
-                                This will remove all saved resume data from this browser and return the editor to its default state.
+                                This will clear all saved resume information from this browser and reset the editor to its original state.
                             </p>
                         </div>
                     </div>
@@ -46,7 +46,7 @@ export default function ResetModal() {
             actions={(
                 <>
                         <Button variant="surface" text="Cancel" onClick={() => handleCancel()} />
-                        <Button variant="danger" text="Reset everything" onClick={() => handleConfirm()}/>
+                        <Button variant="danger" text="Reset" onClick={() => handleConfirm()}/>
                 </>
             )}
             allowOutsideClick={true}

@@ -136,14 +136,14 @@ export default function TemplatePanel() {
                                 <label className="fieldset-legend text-xs font-medium uppercase tracking-[0.18em] text-slate-400" htmlFor="template-color">
                                     {colorField.label}
                                 </label>
-                                <div className="flex flex-wrap items-center gap-3 rounded-[0.35rem] border border-base-300 bg-base-200/65 px-3 py-3">
+                                <div className="flex flex-wrap items-center gap-3 rounded-[0.35rem] border border-slate-500/38 bg-slate-900/42 px-3 py-3">
                                     <input
                                         id="template-color"
                                         type="color"
                                         aria-label={colorField.label}
                                         value={colorField.value}
                                         onChange={event => colorField.onChange(event.target.value)}
-                                        className="h-10 w-14 shrink-0 cursor-pointer rounded-[0.25rem] border border-base-300 bg-transparent p-1"
+                                        className="h-10 w-14 shrink-0 cursor-pointer rounded-[0.25rem] border border-slate-500/38 bg-slate-900/42 p-1"
                                     />
                                     <div className="min-w-0 flex-1">
                                         <div className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Selected</div>

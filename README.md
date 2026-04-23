@@ -16,8 +16,6 @@
   </p>
 </div>
 
-
-
 ## About the Project
 
 Resume Makinator started from a simple problem: a friend didn’t want to use Word to create a resume because of all the formatting, spacing, and layout work. To make the process simpler and more efficient, I built this project so that all they have to do is fill in structured fields and adjust a few options, instead of manually designing a document from scratch.
@@ -25,8 +23,6 @@ Resume Makinator started from a simple problem: a friend didn’t want to use Wo
 Right now, this project uses a single, opinionated template focused on clarity and readability. The goal is to expand this over time with more templates based on research into resume designs that are widely accepted and appropriate for different roles and industries.
 
 By making this tool public, I want to help anyone who struggles with creating a resume. No complicated editors, no layout headaches! just open it in the browser, fill in the blanks, toggle the sections you need, quickly fix the order of entries, and you’re ready to export.
-
-
 
 ### Features
 
@@ -36,8 +32,6 @@ By making this tool public, I want to help anyone who struggles with creating a 
 - Keep everything client-side, with data stored only in the browser.
 - Export and re-import your data as JSON to back it up or move between devices.
 - Preview your resume in a PDF-style viewer while you edit.
-
-
 
 ### Built With
 
@@ -51,8 +45,6 @@ By making this tool public, I want to help anyone who struggles with creating a 
 - **use-debounce** for smoothing out updates during rapid typing.
 - **nanoid** for generating stable IDs for dynamic list items.
 
-
-
 ## Contributing
 
 Contributions are welcome as long as they respect the license.
@@ -64,7 +56,9 @@ If you want to:
 - **Suggest an improvement** then open an issue or a discussion explaining what you’d like to see.
 - **Submit a fix or feature** then fork the repository, create a branch, and open a pull request.
 
+## Special Credits
 
+Special thanks to [Pollinations AI](https://pollinations.ai) for powering the chat assistant and making AI models accessible to builders.
 
 ## License
 

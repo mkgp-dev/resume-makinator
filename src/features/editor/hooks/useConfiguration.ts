@@ -1,4 +1,4 @@
-import type { ChangeEvent } from "react"
+import { useState, type ChangeEvent } from "react"
 import type { Configuration, TemplateConfig } from "@/entities/resume/types"
 import { useInterfaceStore } from "@/shared/store/useInterfaceStore"
 import { useResumeStore } from "@/entities/resume/store/useResumeStore"
@@ -14,7 +14,37 @@ type TemplateNumberKey<K extends keyof TemplateConfig> = {
     [Key in keyof TemplateConfig[K]]: TemplateConfig[K][Key] extends number ? Key : never
 }[keyof TemplateConfig[K]]
 
+const hasText = (value: unknown) => typeof value === "string" && value.trim().length > 0
+
+const hasExistingResumeContent = () => {
+    const state = useResumeStore.getState()
+    const details = state.personalDetails
+
+    return (
+        hasText(details.fullName) ||
+        hasText(details.jobTitle) ||
+        hasText(details.defaultAddress) ||
+        hasText(details.defaultEmail) ||
+        hasText(details.defaultPhoneNumber) ||
+        hasText(details.socialGithub) ||
+        hasText(details.socialLinkedin) ||
+        hasText(details.summary) ||
+        hasText(details.profilePicture) ||
+        details.knownLanguages.length > 0 ||
+        state.education.length > 0 ||
+        state.references.length > 0 ||
+        state.softSkills.length > 0 ||
+        state.coreSkills.length > 0 ||
+        state.workExperiences.length > 0 ||
+        state.personalProjects.length > 0 ||
+        state.certificates.length > 0 ||
+        state.achievements.length > 0
+    )
+}
+
 export function useConfigurationHook() {
+    const [isImporting, setIsImporting] = useState(false)
+    const [pendingImportFile, setPendingImportFile] = useState<File | null>(null)
     const toNumber = (value: unknown) => {
         if (typeof value === "number") return value
         if (typeof value === "string" && value.trim()) return Number(value)
@@ -81,13 +111,12 @@ export function useConfigurationHook() {
         URL.revokeObjectURL(url)
     }
 
-    const importData = (event: ChangeEvent<HTMLInputElement>) => {
-        const input = event.target
-        const file = event.target.files?.[0]
-        if (!file) return
+    const readImportFile = (file: File) => {
+        setIsImporting(true)
         if (!isJsonFile(file) || file.size > MAX_IMPORT_SIZE_BYTES) {
             setDataStatus(false)
-            input.value = ""
+            setIsImporting(false)
+            setPendingImportFile(null)
             return
         }
 
@@ -99,7 +128,6 @@ export function useConfigurationHook() {
 
                 if (!sanitized) {
                     setDataStatus(false)
-                    input.value = ""
                     return
                 }
 
@@ -108,10 +136,39 @@ export function useConfigurationHook() {
             } catch {
                 setDataStatus(false)
             } finally {
-                input.value = ""
+                setIsImporting(false)
+                setPendingImportFile(null)
             }
         }
+        reader.onerror = () => {
+            setDataStatus(false)
+            setIsImporting(false)
+            setPendingImportFile(null)
+        }
         reader.readAsText(file)
+    }
+
+    const importData = (event: ChangeEvent<HTMLInputElement>) => {
+        const input = event.target
+        const file = event.target.files?.[0]
+        if (!file) return
+        input.value = ""
+
+        if (hasExistingResumeContent()) {
+            setPendingImportFile(file)
+            return
+        }
+
+        readImportFile(file)
+    }
+
+    const confirmImportData = () => {
+        if (!pendingImportFile) return
+        readImportFile(pendingImportFile)
+    }
+
+    const cancelImportData = () => {
+        setPendingImportFile(null)
     }
 
     return {
@@ -126,6 +183,10 @@ export function useConfigurationHook() {
         reset,
         importData,
         exportData,
+        isImporting,
+        hasPendingImport: pendingImportFile !== null,
+        confirmImportData,
+        cancelImportData,
         updateNumberConfig,
         updateTemplateNumber,
     }

@@ -21,9 +21,9 @@ test.describe("resume editor", () => {
     await expect(page.getByTestId("landing-hero-copy")).toBeVisible()
     await expect(page.getByTestId("landing-hero-visual")).toBeVisible()
     await expect(page.getByTestId("landing-proof-grid")).toBeVisible()
-    await expect(page.getByTestId("landing-proof-grid").getByText("Structured editing")).toBeVisible()
-    await expect(page.getByTestId("landing-proof-grid").getByText("Live PDF preview")).toBeVisible()
-    await expect(page.getByTestId("landing-proof-grid").getByText("Export and reorder")).toBeVisible()
+    await expect(page.getByTestId("landing-proof-grid").getByText("Free resume builder")).toBeVisible()
+    await expect(page.getByTestId("landing-proof-grid").getByText("Ready to edit and view")).toBeVisible()
+    await expect(page.getByTestId("landing-proof-grid").getByText("Chat assistant guidance")).toBeVisible()
 
     const copyBox = await page.getByTestId("landing-hero-copy").boundingBox()
     const visualBox = await page.getByTestId("landing-hero-visual").boundingBox()
@@ -227,7 +227,7 @@ test.describe("resume editor", () => {
     await expect(page.getByTestId("sortable-item")).toHaveCount(1)
   })
 
-  test("dragging repeated entries shows active and drop-target feedback before reorder", async ({ page }) => {
+  test("dragging repeated entries uses modify-components-style displacement before drop", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto("/")
     await page.getByRole("button", { name: "Get started" }).click()
@@ -235,15 +235,19 @@ test.describe("resume editor", () => {
 
     await page.getByRole("button", { name: "Work Experience" }).click()
     await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("textbox", { name: "Position" }).fill("Backend Engineer")
     await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("textbox", { name: "Position" }).last().fill("Frontend Engineer")
 
     const dragHandle = page.getByTestId("sortable-handle").first()
-    const activeCard = page.getByTestId("sortable-item").first()
     const targetCard = page.getByTestId("sortable-item").nth(1)
+    const backendCard = page.getByTestId("sortable-item").filter({ hasText: "Backend Engineer" })
+    const frontendCard = page.getByTestId("sortable-item").filter({ hasText: "Frontend Engineer" })
     const handleBox = await dragHandle.boundingBox()
+    const firstBox = await backendCard.boundingBox()
     const targetBox = await targetCard.boundingBox()
 
-    if (!handleBox || !targetBox) {
+    if (!handleBox || !firstBox || !targetBox) {
       throw new Error("Sortable handles did not render for drag feedback test.")
     }
 
@@ -251,8 +255,143 @@ test.describe("resume editor", () => {
     await page.mouse.down()
     await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height * 0.78, { steps: 10 })
 
-    await expect(activeCard).toHaveAttribute("data-state", "dragging")
-    await expect(targetCard).toHaveAttribute("data-drop-position", /before|after/)
+    await expect(backendCard).toHaveAttribute("data-state", "dragging")
+    await expect(frontendCard).toHaveAttribute("data-drop-position", "after")
+
+    const displacedFrontendBox = await frontendCard.boundingBox()
+    if (!displacedFrontendBox) {
+      throw new Error("Sortable target did not remain visible while displaced.")
+    }
+
+    expect(displacedFrontendBox.y).toBeLessThan(targetBox.y - 8)
+
+    await page.mouse.up()
+    await expect(page.getByTestId("sortable-item").first()).toContainText("Frontend Engineer")
+    await expect(page.getByTestId("sortable-item").nth(1)).toContainText("Backend Engineer")
+  })
+
+  test("repeated-entry sorting uses a single vertical row layout like modify components", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto("/")
+    await page.getByRole("button", { name: "Get started" }).click()
+    await page.getByRole("button", { name: "I understand" }).click()
+
+    await page.getByRole("button", { name: "Work Experience" }).click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("textbox", { name: "Position" }).fill("Backend Engineer")
+    await page.getByRole("button", { name: "Add an item" }).click()
+
+    const firstItem = page.getByTestId("sortable-item").first()
+    const dragHandle = page.getByTestId("sortable-handle").first()
+    const summaryToggle = firstItem.locator("button[aria-expanded]").first()
+    const deleteButton = page.getByLabel("Delete item").first()
+
+    const handleBox = await dragHandle.boundingBox()
+    const summaryBox = await summaryToggle.boundingBox()
+    const deleteBox = await deleteButton.boundingBox()
+    const firstItemBox = await firstItem.boundingBox()
+
+    if (!handleBox || !summaryBox || !deleteBox || !firstItemBox) {
+      throw new Error("Sortable row controls did not render for layout verification.")
+    }
+
+    const handleCenterY = handleBox.y + handleBox.height / 2
+    const summaryCenterY = summaryBox.y + summaryBox.height / 2
+    const deleteCenterY = deleteBox.y + deleteBox.height / 2
+
+    expect(Math.abs(handleCenterY - summaryCenterY)).toBeLessThan(8)
+    expect(Math.abs(deleteCenterY - summaryCenterY)).toBeLessThan(8)
+    expect(handleBox.x).toBeLessThan(summaryBox.x)
+    expect(summaryBox.x + summaryBox.width).toBeLessThan(deleteBox.x)
+
+    await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(handleBox.x + handleBox.width / 2 + 80, handleBox.y + handleBox.height + 64, { steps: 10 })
+
+    const draggingItemBox = await firstItem.boundingBox()
+    if (!draggingItemBox) {
+      throw new Error("Sortable item disappeared while verifying vertical-only drag.")
+    }
+
+    expect(Math.abs(draggingItemBox.x - firstItemBox.x)).toBeLessThan(2)
+
+    await page.mouse.up()
+  })
+
+  test("dragging an entry into the first slot stays below the add button", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto("/")
+    await page.getByRole("button", { name: "Get started" }).click()
+    await page.getByRole("button", { name: "I understand" }).click()
+
+    await page.getByRole("button", { name: "Education" }).click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+
+    const addButton = page.getByRole("button", { name: "Add an item" })
+    const firstItem = page.getByTestId("sortable-item").first()
+    const activeItem = page.getByTestId("sortable-item").nth(2)
+    const activeHandle = page.getByTestId("sortable-handle").nth(2)
+    const addButtonBox = await addButton.boundingBox()
+    const activeHandleBox = await activeHandle.boundingBox()
+    const firstItemBox = await firstItem.boundingBox()
+
+    if (!addButtonBox || !activeHandleBox || !firstItemBox) {
+      throw new Error("Education sortable controls did not render for first-slot drag test.")
+    }
+
+    await page.mouse.move(activeHandleBox.x + activeHandleBox.width / 2, activeHandleBox.y + activeHandleBox.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(firstItemBox.x + firstItemBox.width / 2, addButtonBox.y - 64, { steps: 12 })
+
+    await expect(activeItem).toHaveAttribute("data-state", "dragging")
+    const draggingBox = await activeItem.boundingBox()
+    if (!draggingBox) {
+      throw new Error("Active sortable item disappeared while dragging into the first slot.")
+    }
+
+    expect(draggingBox.y).toBeGreaterThanOrEqual(addButtonBox.y + addButtonBox.height - 2)
+    expect(draggingBox.y).toBeGreaterThanOrEqual(firstItemBox.y - 2)
+
+    await page.mouse.up()
+  })
+
+  test("dragging the second entry into the first slot stays below the add button", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto("/")
+    await page.getByRole("button", { name: "Get started" }).click()
+    await page.getByRole("button", { name: "I understand" }).click()
+
+    await page.getByRole("button", { name: "Education" }).click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+
+    const addButton = page.getByRole("button", { name: "Add an item" })
+    const firstItem = page.getByTestId("sortable-item").first()
+    const activeItem = page.getByTestId("sortable-item").nth(1)
+    const activeHandle = page.getByTestId("sortable-handle").nth(1)
+    const addButtonBox = await addButton.boundingBox()
+    const activeHandleBox = await activeHandle.boundingBox()
+    const firstItemBox = await firstItem.boundingBox()
+
+    if (!addButtonBox || !activeHandleBox || !firstItemBox) {
+      throw new Error("Education sortable controls did not render for second-to-first drag test.")
+    }
+
+    await page.mouse.move(activeHandleBox.x + activeHandleBox.width / 2, activeHandleBox.y + activeHandleBox.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(firstItemBox.x + firstItemBox.width / 2, addButtonBox.y - 64, { steps: 12 })
+
+    await expect(activeItem).toHaveAttribute("data-state", "dragging")
+    const draggingBox = await activeItem.boundingBox()
+    if (!draggingBox) {
+      throw new Error("Second sortable item disappeared while dragging into the first slot.")
+    }
+
+    expect(draggingBox.y).toBeGreaterThanOrEqual(addButtonBox.y + addButtonBox.height - 2)
+    expect(draggingBox.y).toBeGreaterThanOrEqual(firstItemBox.y - 2)
 
     await page.mouse.up()
   })
@@ -292,8 +431,9 @@ test.describe("resume editor", () => {
     await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2)
     await page.mouse.down()
     await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height * 0.78, { steps: 10 })
-    await expect(targetCard).toHaveAttribute("data-drop-position", /before|after/)
     await page.mouse.up()
+    await expect(page.getByTestId("sortable-item").first()).toContainText("Frontend Engineer")
+    await expect(page.getByTestId("sortable-item").nth(1)).toContainText("Backend Engineer")
   })
 
   test("dragging the last repeated entry keeps the real item visible without a separate overlay ghost", async ({ page }) => {
@@ -330,7 +470,7 @@ test.describe("resume editor", () => {
     await page.mouse.up()
   })
 
-  test("expanded repeated entries keep their content visible while dragging", async ({ page }) => {
+  test("expanded repeated entries hide their inputs while dragging and restore after drop", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto("/")
     await page.getByRole("button", { name: "Get started" }).click()
@@ -338,34 +478,45 @@ test.describe("resume editor", () => {
 
     await page.getByRole("button", { name: "Work Experience" }).click()
     await page.getByRole("button", { name: "Add an item" }).click()
-    await page.getByRole("button", { name: "Add an item" }).click()
-
-    const firstItem = page.getByTestId("sortable-item").first()
     await page.getByRole("textbox", { name: "Position" }).first().fill("Lead Engineer")
     await page.getByRole("textbox", { name: "Company" }).first().fill("OpenAI")
-    await firstItem.locator("button[aria-expanded]").click()
+    await page.getByRole("button", { name: "Add an item" }).click()
+    await page.getByRole("textbox", { name: "Position" }).last().fill("Support Engineer")
+
+    const leadItem = page.getByTestId("sortable-item").filter({ hasText: "Lead Engineer" })
+    await leadItem.locator("button[aria-expanded]").click()
 
     const companyField = page.getByRole("textbox", { name: "Company" }).first()
-    const dragHandle = page.getByTestId("sortable-handle").first()
-    const targetCard = page.getByTestId("sortable-item").nth(1)
+    const dragHandle = leadItem.getByTestId("sortable-handle")
+    const targetCard = page.getByTestId("sortable-item").filter({ hasText: "Support Engineer" })
     const handleBox = await dragHandle.boundingBox()
+    const leadBox = await leadItem.boundingBox()
     const targetBox = await targetCard.boundingBox()
 
-    if (!handleBox || !targetBox) {
+    if (!handleBox || !leadBox || !targetBox) {
       throw new Error("Expanded sortable item did not render for drag-stability test.")
     }
 
-    await expect(firstItem).toHaveAttribute("data-expanded", "true")
+    await expect(leadItem).toHaveAttribute("data-expanded", "true")
     await expect(companyField).toBeVisible()
 
     await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2)
     await page.mouse.down()
     await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height * 0.78, { steps: 10 })
 
-    await expect(firstItem).toHaveAttribute("data-state", "dragging")
-    await expect(companyField).toBeVisible()
+    await expect(leadItem).toHaveAttribute("data-state", "dragging")
+    await expect(leadItem).toHaveAttribute("data-expanded", "true")
+    await expect(companyField).toBeHidden()
+    const draggingBox = await leadItem.boundingBox()
+    if (!draggingBox) {
+      throw new Error("Expanded sortable item disappeared while dragging.")
+    }
+    expect(draggingBox.y).toBeGreaterThan(leadBox.y - 8)
+    expect(draggingBox.height).toBeLessThan(leadBox.height * 0.6)
 
     await page.mouse.up()
+    await expect(page.getByTestId("sortable-item").filter({ hasText: "Lead Engineer" })).toHaveAttribute("data-expanded", "true")
+    await expect(companyField).toBeVisible()
   })
 
   test("language multiselect selects an option on the first click", async ({ page }) => {
@@ -446,8 +597,8 @@ test.describe("resume editor", () => {
     const exportedPath = testInfo.outputPath("resume-modern-roundtrip.json")
     await download.saveAs(exportedPath)
 
-    await page.getByRole("button", { name: "Reset everything" }).click()
-    await page.getByRole("button", { name: "Reset everything" }).nth(1).click()
+    await page.getByRole("button", { name: "Reset" }).click()
+    await page.getByRole("button", { name: "Reset" }).nth(1).click()
 
     await page.getByRole("button", { name: "Configuration" }).click()
     await expect(page.getByRole("group").filter({
@@ -472,14 +623,14 @@ test.describe("resume editor", () => {
     await page.getByRole("button", { name: "I understand" }).click()
 
     await page.getByRole("button", { name: "Data" }).click()
-    await page.getByRole("button", { name: "Reset everything" }).click()
+    await page.getByRole("button", { name: "Reset" }).click()
 
     const dialog = page.getByRole("dialog")
     await expect(dialog).toBeVisible()
     await page.getByRole("button", { name: "Cancel" }).click()
     await expect(dialog).toBeHidden()
 
-    await page.getByRole("button", { name: "Reset everything" }).click()
+    await page.getByRole("button", { name: "Reset" }).click()
     await expect(dialog).toBeVisible()
     await page.mouse.click(10, 10)
     await expect(dialog).toBeHidden()

@@ -121,63 +121,53 @@ export default function SortableItem({
             data-state={isRemoving ? "removing" : isActiveDrag ? "dragging" : "idle"}
             data-drop-position={dropPosition ?? "none"}
             className={clsx(
-                "relative grid gap-4 rounded-[0.45rem] border border-slate-500/24 bg-base-200/30 px-3 py-3 transition-[transform,border-color,box-shadow,background-color,opacity] duration-180 sm:grid-cols-[2.25rem_minmax(0,1fr)]",
+                "relative rounded-[0.45rem] border border-slate-500/24 bg-base-200/30 px-3 py-3 transition-[transform,border-color,box-shadow,background-color,opacity] duration-180",
                 isFadeIn && "editor-item-enter",
                 isRemoving && "editor-item-removing",
                 isActiveDrag && "z-30 border-sky-300/38 bg-slate-800/86 shadow-[0_22px_46px_rgba(2,6,23,0.38)]",
-                dropPosition && "bg-base-200/42",
             )}
         >
-            <div
-                aria-hidden="true"
-                className={clsx(
-                    "pointer-events-none absolute left-12 right-3 h-[2px] rounded-full bg-sky-300/88 opacity-0 shadow-[0_0_18px_rgba(56,189,248,0.22)] transition-opacity duration-150",
-                    dropPosition === "before" && "top-1.5 opacity-100",
-                    dropPosition === "after" && "bottom-1.5 opacity-100",
-                )}
-            />
-
-            <div className="flex flex-col items-center gap-2 pt-0.5">
+            <div className="flex min-w-0 items-start gap-3">
                 <div
                     ref={setActivatorNodeRef}
                     {...attributes}
                     {...listeners}
                     data-testid="sortable-handle"
                     aria-label="Drag item"
-                    className="flex h-8 w-8 cursor-grab touch-none items-center justify-center rounded-[0.35rem] text-slate-400 transition-[background-color,color,transform] duration-150 hover:bg-base-100/70 hover:text-slate-100 active:cursor-grabbing active:scale-95 active:text-slate-50"
+                    className="flex h-8 w-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-[0.35rem] text-slate-400 transition-[background-color,color,transform] duration-150 hover:bg-base-100/70 hover:text-slate-100 active:cursor-grabbing active:scale-95 active:text-slate-50"
                 >
                     <Bars3Icon className="size-5" />
+                </div>
+
+                <div className="min-w-0 flex-1 pt-0.5">
+                    <SortableSummaryHeader
+                        summary={summary}
+                        isExpanded={isExpanded}
+                        onToggleExpand={onToggleExpand}
+                        isInteractive={!isActiveDrag}
+                    />
                 </div>
 
                 <button
                     type="button"
                     onClick={handleDelete}
                     aria-label="Delete item"
-                    className="flex h-8 w-8 items-center justify-center rounded-[0.35rem] text-slate-400 transition-[background-color,color,transform] duration-150 hover:bg-red-500/10 hover:text-red-300 active:scale-95"
+                    className="ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-[0.35rem] text-slate-400 transition-[background-color,color,transform] duration-150 hover:bg-red-500/10 hover:text-red-300 active:scale-95"
                 >
                     <TrashIcon className="size-5" />
                 </button>
             </div>
-            <div className="min-w-0">
-                <SortableSummaryHeader
-                    summary={summary}
-                    isExpanded={isExpanded}
-                    onToggleExpand={onToggleExpand}
-                    isInteractive={!isActiveDrag}
-                />
 
-                {isExpanded ? (
-                    <div
-                        className={clsx(
-                            "pt-3 transition-opacity duration-150",
-                            !isActiveDrag && "editor-panel-enter",
-                            isActiveDrag && "pointer-events-none select-none opacity-70"
-                        )}
-                    >
-                        {children}
-                    </div>
-                ) : null}
-            </div>
+            {isExpanded && !isActiveDrag ? (
+                <div
+                    className={clsx(
+                        "mt-3 border-t border-slate-500/16 pt-3 transition-opacity duration-150",
+                        "editor-panel-enter",
+                    )}
+                >
+                    {children}
+                </div>
+            ) : null}
 
         </div>
     )
