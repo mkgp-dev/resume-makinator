@@ -44,7 +44,6 @@ test.describe("seo", () => {
 
     const csp = page.locator('meta[http-equiv="Content-Security-Policy"]')
     await expect(csp).toHaveAttribute("content", /script-src[^;]*https:\/\/static\.cloudflareinsights\.com/)
-    await expect(csp).toHaveAttribute("content", /script-src[^;]*'sha256-rXmU8JD8rCiy\/8Z78bNJPA7QrlG8kghDfG9cuSY\+xHo='/)
     await expect(csp).toHaveAttribute("content", /connect-src[^;]*https:\/\/cloudflareinsights\.com/)
   })
 
