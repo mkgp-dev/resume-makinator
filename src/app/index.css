@@ -49,6 +49,8 @@
   --animate-panel-in: panel-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-item-in: item-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-item-out: item-out 0.18s ease-in forwards;
+  --animate-chat-message-in: chat-message-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-chat-card-in: chat-card-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-landing-rise: landing-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-landing-float: landing-float 6s ease-in-out infinite;
   @keyframes fade-in {
@@ -104,6 +106,28 @@
     }
   }
 
+  @keyframes chat-message-in {
+    0% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes chat-card-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   @keyframes landing-rise {
     0% {
       opacity: 0;
@@ -153,7 +177,17 @@
   }
 
   .editor-panel-surface {
-    @apply border border-base-300/80 bg-base-200/72 shadow-[0_18px_60px_rgba(2,6,23,0.32)] backdrop-blur-xl;
+    @apply border border-slate-400/18 bg-slate-900/44 shadow-[0_18px_60px_rgba(2,6,23,0.32)] backdrop-blur-2xl;
+  }
+
+  .editor-left-pane {
+    background-image:
+      linear-gradient(135deg, rgb(148 163 184 / 0.075), transparent 44%),
+      radial-gradient(circle at 20% 0%, rgb(125 211 252 / 0.08), transparent 32%),
+      linear-gradient(180deg, rgb(15 23 42 / 0.54), rgb(15 23 42 / 0.36));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 22px 70px rgb(2 6 23 / 0.34);
   }
 
   .editor-glass-surface {
@@ -161,18 +195,48 @@
   }
 
   .editor-subtle-panel {
-    @apply border border-slate-500/28 bg-base-200/45 p-4 sm:p-5;
+    @apply border border-slate-500/34 bg-slate-800/32 p-4 sm:p-5;
   }
 
   .editor-control {
-    @apply border border-base-300 bg-base-200/80 text-base-content outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-slate-500;
+    @apply border border-slate-500/38 bg-slate-900/42 text-base-content outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-slate-500;
     box-shadow: none;
   }
 
+  .editor-control.input,
+  .editor-control.textarea {
+    border-color: rgb(100 116 139 / 0.38) !important;
+    background-color: rgb(15 23 42 / 0.42) !important;
+    color: rgb(248 250 252 / 0.94) !important;
+  }
+
+  .editor-control.input:hover,
+  .editor-control.textarea:hover {
+    border-color: rgb(148 163 184 / 0.46) !important;
+    background-color: rgb(30 41 59 / 0.44) !important;
+  }
+
+  .editor-file-control {
+    @apply border-slate-500/38 bg-slate-900/42 hover:border-slate-400/46 hover:bg-slate-800/44;
+  }
+
+  .editor-control:disabled,
+  .editor-control[aria-disabled="true"],
+  .editor-control.input:disabled,
+  .editor-control.textarea:disabled {
+    @apply border-slate-600/28 bg-slate-900/24 text-slate-500 placeholder:text-slate-600;
+    background-color: rgb(15 23 42 / 0.24) !important;
+    border-color: rgb(71 85 105 / 0.28) !important;
+    color: rgb(100 116 139 / 1) !important;
+  }
+
   .editor-control:focus,
-  .editor-control:focus-visible {
-    border-color: rgb(226 232 240 / 0.72);
-    box-shadow: inset 0 0 0 1px rgb(241 245 249 / 0.92);
+  .editor-control:focus-visible,
+  .editor-control:focus-within {
+    border-color: rgb(125 211 252 / 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgb(186 230 253 / 0.34),
+      0 0 0 1px rgb(125 211 252 / 0.1);
     outline: none;
   }
 
@@ -181,7 +245,7 @@
   }
 
   .editor-section-rule {
-    @apply h-px flex-1 bg-slate-500/55;
+    @apply h-px flex-1 bg-slate-500;
   }
 
   .editor-scroll-fade {
@@ -214,6 +278,36 @@
   .editor-panel-enter {
     animation: var(--animate-panel-in);
     transform-origin: top;
+  }
+
+  .editor-chat-panel {
+    animation: var(--animate-panel-in);
+  }
+
+  .chat-assistant-message {
+    animation: var(--animate-chat-message-in);
+  }
+
+  .animate-chat-card-in {
+    animation: var(--animate-chat-card-in);
+  }
+
+  .chat-assistant-bubble {
+    max-width: min(82%, 21rem);
+  }
+
+  .chat.chat-assistant-message .chat-assistant-bubble::before,
+  .chat.chat-assistant-message .chat-assistant-bubble::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .editor-chat-panel,
+    .chat-assistant-message,
+    .animate-chat-card-in {
+      animation: none;
+    }
   }
 
   .editor-item-enter {

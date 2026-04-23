@@ -47,7 +47,7 @@ function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemPr
             ref={setNodeRef}
             style={style}
             className={clsx(
-                "flex flex-row items-center gap-3 rounded-[0.35rem] border border-base-300/70 bg-base-200/55 px-3 py-2",
+                "flex flex-row items-center gap-3 rounded-[0.35rem] border border-slate-500/30 bg-slate-800/58 px-3 py-2 shadow-[inset_0_1px_0_rgba(148,163,184,0.04)]",
                 isDragging ? "opacity-80" : "opacity-100",
             )}
         >
@@ -58,7 +58,7 @@ function SectionOrderItem({ id, label, isEnabled, onToggle }: SectionOrderItemPr
             >
                 <Bars3Icon className="size-5" />
             </div>
-            <span className="text-sm font-medium text-slate-200">{label}</span>
+            <span className="text-sm font-medium text-slate-100">{label}</span>
             <div className="ml-auto">
                 <input
                     type="checkbox"
@@ -96,7 +96,7 @@ export default function TemplateSectionOrder({ templateId }: TemplateSectionOrde
     }
 
     return (
-        <fieldset className="fieldset rounded-[0.45rem] border border-slate-500/36 bg-base-200/22 p-4 md:h-full">
+        <fieldset className="fieldset rounded-[0.45rem] border border-slate-500/48 bg-slate-800/34 p-4 md:h-full">
             <legend className="fieldset-legend px-1 text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">Modify components</legend>
             <span className="text-sm text-slate-400">Drag to reorder and toggle to enable.</span>
 

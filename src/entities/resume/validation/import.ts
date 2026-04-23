@@ -335,7 +335,11 @@ const isConfiguration = (value: unknown): value is Configuration => (
     isString(value.fontStyle) &&
     isNumberLike(value.fontSize) &&
     toNumber(value.fontSize) > 0 &&
-    isString(value.pageSize)
+    isString(value.pageSize) &&
+    (
+        !Object.prototype.hasOwnProperty.call(value, "pollinationsApiKey") ||
+        isString(value.pollinationsApiKey)
+    )
 )
 
 export const validateImportData = (data: unknown): ResumeImportData | null => {
@@ -371,6 +375,7 @@ export const validateImportData = (data: unknown): ResumeImportData | null => {
             ...data.configuration,
             template: normalizeTemplateId(data.configuration.template),
             fontSize: toNumber(data.configuration.fontSize),
+            pollinationsApiKey: toString(data.configuration.pollinationsApiKey),
         },
         enableInRender: renderConfig,
         template: templateConfig,

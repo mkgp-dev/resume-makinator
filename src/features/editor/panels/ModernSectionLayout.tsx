@@ -76,7 +76,7 @@ function SortableSectionItem({ id, container, onMove }: SortableSectionItemProps
             {...attributes}
             {...listeners}
             className={clsx(
-                "flex min-w-0 cursor-grab flex-row items-start gap-3 rounded-[0.35rem] border border-base-300/70 bg-base-200/55 px-3 py-2 active:cursor-grabbing",
+                "flex min-w-0 cursor-grab flex-row items-start gap-3 rounded-[0.35rem] border border-slate-500/30 bg-slate-800/58 px-3 py-2 active:cursor-grabbing",
                 isDragging ? "opacity-80" : "opacity-100",
             )}
         >
@@ -88,7 +88,7 @@ function SortableSectionItem({ id, container, onMove }: SortableSectionItemProps
             </span>
             <button
                 type="button"
-                className="ml-auto shrink-0 rounded-[0.25rem] border border-base-300 px-2 py-1 text-[11px] font-medium text-slate-200 hover:border-primary/45 hover:text-slate-50"
+                className="ml-auto shrink-0 rounded-[0.25rem] border border-slate-500/38 bg-slate-900/30 px-2 py-1 text-[11px] font-medium text-slate-200 hover:border-primary/45 hover:text-slate-50"
                 onPointerDown={(event) => event.stopPropagation()}
                 onMouseDown={(event) => event.stopPropagation()}
                 onClick={(event) => {
@@ -118,7 +118,7 @@ function SectionColumn({ container, label, items, onMove }: SectionColumnProps) 
             <div
                 ref={setNodeRef}
                 data-testid={`modern-${container}-sections`}
-                className={clsx("space-y-2 rounded-[0.35rem] border border-base-300/60 bg-base-200/25 p-2", isOver && "bg-base-200/55")}
+                className={clsx("space-y-2 rounded-[0.35rem] border border-slate-500/34 bg-slate-900/28 p-2", isOver && "bg-slate-800/56")}
             >
                 <SortableContext items={items} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2">
@@ -268,7 +268,7 @@ export default function ModernSectionLayout() {
     }
 
     return (
-        <fieldset className="fieldset rounded-[0.35rem] border border-base-300/70 p-3 md:h-full" aria-label="Section layout">
+        <fieldset className="fieldset rounded-[0.35rem] border border-slate-500/38 bg-slate-900/20 p-3 md:h-full" aria-label="Section layout">
             <legend className="fieldset-legend text-xs font-medium uppercase tracking-[0.18em] text-slate-400">Section layout</legend>
             <span className="text-xs text-slate-400">
                 Drag sections between the sidebar and the main content area, or use the move action inside each row.

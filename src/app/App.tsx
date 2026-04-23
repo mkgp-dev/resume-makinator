@@ -1,6 +1,7 @@
 import { usePageHook } from "@/features/editor/hooks/usePage"
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
+import ChatAssistant from "@/features/chat-assistant/ChatAssistant"
 import Tab from "@/widgets/layout/Tab"
 import Default from "@/widgets/layout/Default"
 import Navigation from "@/widgets/layout/Navigation"
@@ -110,7 +111,7 @@ export default function App() {
         />
         <Navigation active={page} />
         <main className="flex flex-1 flex-col gap-5 lg:min-h-0 lg:flex-row lg:gap-6">
-          <section className="editor-panel-surface relative overflow-hidden rounded-[0.65rem] px-4 py-4 sm:px-5 lg:min-h-0 lg:w-[min(44vw,37rem)] lg:flex-none lg:px-6 lg:py-5">
+          <section className="editor-panel-surface editor-left-pane relative overflow-hidden rounded-[0.65rem] px-4 py-4 sm:px-5 lg:min-h-0 lg:w-[min(44vw,37rem)] lg:flex-none lg:px-6 lg:py-5">
             <div className="relative lg:h-full">
               <div
                 className={`editor-scroll-fade editor-scroll-fade-top hidden lg:block ${scrollFadeState.top ? "opacity-100" : "opacity-0"}`}
@@ -121,7 +122,7 @@ export default function App() {
               <div
                 ref={editorScrollRef}
                 onScroll={syncEditorScrollFade}
-                className={`primary-scroll overflow-visible lg:h-full lg:overflow-x-hidden lg:overflow-y-auto lg:pb-6 lg:pr-2 ${scrollMaskClass}`}
+                className={`primary-scroll -mx-1 px-1 overflow-visible lg:h-full lg:overflow-x-hidden lg:overflow-y-auto lg:pb-6 lg:pr-3 ${scrollMaskClass}`}
               >
                 <Tab active={page} />
               </div>
@@ -148,6 +149,7 @@ export default function App() {
 
         <Footer />
       </div>
+      <ChatAssistant />
     </div>
   )
 }

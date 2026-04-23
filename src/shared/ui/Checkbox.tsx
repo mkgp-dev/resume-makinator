@@ -22,7 +22,7 @@ export default function Checkbox({
                 className={clsx(
                     "label flex min-h-11 justify-start gap-3 text-sm text-slate-200",
                     isFramed
-                        ? "rounded-[var(--radius-field)] border border-slate-500/38 bg-base-200/28 px-3 py-2.5"
+                        ? "rounded-[var(--radius-field)] border border-slate-500/38 bg-slate-900/42 px-3 py-2.5"
                         : "rounded-[0.35rem] px-0 py-2 text-slate-100",
                 )}
             >
@@ -30,7 +30,7 @@ export default function Checkbox({
                     type="checkbox"
                     checked={isChecked ?? false}
                     className={clsx(
-                        "checkbox checkbox-sm mt-0.5 shrink-0 rounded-[0.22rem] bg-slate-950/68 checked:bg-primary checked:text-primary-content",
+                        "checkbox checkbox-sm mt-0.5 shrink-0 rounded-[0.22rem] bg-slate-900/72 checked:bg-primary checked:text-primary-content",
                         isFramed
                             ? "border border-slate-500/62 checked:border-primary"
                             : "border border-slate-500/50 checked:border-primary",

@@ -32,7 +32,11 @@ export default function PrivacyModal() {
                     <h3 className="text-lg font-manrope font-bold">Privacy & Security Notice</h3>
                     <div className="space-y-3 py-4">
                         <p className="text-sm leading-relaxed">
-                            I do not <span className="font-medium text-primary">send or store</span> any of your information on my server. All data is kept locally in your browser’s storage, so your information stays on your device and under your control. This design greatly reduces the risk of data exposure from my side, because there is no central database for anyone to hack or leak.
+                            I do not <span className="font-medium text-primary">store</span> your resume information on my server. Your resume data is kept locally in your browser’s storage, so your information stays on your device and under your control. This design greatly reduces the risk of data exposure from my side, because there is no central database for anyone to hack or leak.
+                        </p>
+
+                        <p className="text-sm leading-relaxed">
+                            If you use the <span className="font-medium text-primary">Chat Assistant</span>, only the needed resume context is sent to the AI service so it can generate a better response. This app does not store that AI request data on my server.
                         </p>
 
                         <p className="text-sm leading-relaxed">

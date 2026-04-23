@@ -113,6 +113,7 @@ export type Configuration = {
   fontStyle: FontStyle
   fontSize: number
   pageSize: PageSize
+  pollinationsApiKey: string
 }
 
 export type SharedTemplateConfig = {

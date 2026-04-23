@@ -156,7 +156,7 @@ export default function Navigation({ active }: NavigationProps) {
                         ))}
                     </div>
 
-                    <div className="h-px bg-linear-to-r from-base-300 via-slate-500/50 to-transparent" />
+                    <div className="h-px bg-slate-500/55" />
 
                     <div className="space-y-2">
                         {secondaryTabs.map((item) => (
@@ -188,7 +188,7 @@ export default function Navigation({ active }: NavigationProps) {
                         ))}
                     </div>
 
-                    <div className="h-px w-full bg-linear-to-r from-transparent via-slate-500/55 to-transparent" />
+                    <div className="h-px w-full bg-slate-500/55" />
 
                     <div data-testid="editor-sidebar-secondary-group" className="flex w-full flex-col items-center gap-2">
                         {secondaryTabs.map((item) => (

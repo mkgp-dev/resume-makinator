@@ -1,6 +1,6 @@
 import type { ActivePage, PageId } from "@/app/navigation"
 
-export const SITE_TITLE = "Resume Makinator | Free Resume Builder & PDF Export"
+export const SITE_TITLE = "Resume Makinator | Free Online Resume Builder"
 
 const PAGE_TITLES: Record<PageId, string> = {
   about: "About You | Resume Makinator",
