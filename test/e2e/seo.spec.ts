@@ -39,6 +39,15 @@ test.describe("seo", () => {
     await expect(page.getByRole("navigation")).toHaveCount(0)
   })
 
+  test("content security policy allows Cloudflare Web Analytics", async ({ page }) => {
+    await page.goto("/")
+
+    const csp = page.locator('meta[http-equiv="Content-Security-Policy"]')
+    await expect(csp).toHaveAttribute("content", /script-src[^;]*https:\/\/static\.cloudflareinsights\.com/)
+    await expect(csp).toHaveAttribute("content", /script-src[^;]*'sha256-rXmU8JD8rCiy\/8Z78bNJPA7QrlG8kghDfG9cuSY\+xHo='/)
+    await expect(csp).toHaveAttribute("content", /connect-src[^;]*https:\/\/cloudflareinsights\.com/)
+  })
+
   test("crawlability assets are reachable", async ({ request }) => {
     const robotsResponse = await request.get("/robots.txt")
     expect(robotsResponse.ok()).toBeTruthy()
