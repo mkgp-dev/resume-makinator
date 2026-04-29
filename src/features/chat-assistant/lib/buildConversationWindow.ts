@@ -1,21 +1,17 @@
-import type {
-  AiChatConversationMessage,
-  ChatConversationEntry,
-  ChatMessageEntry,
-} from "@/features/chat-assistant/types"
+import type { AiChatMessage, ChatMessageRecord } from "@/features/chat-assistant/types"
 
-const MAX_CONVERSATION_MESSAGES = 6
+const MAX_RECENT_MESSAGES = 8
+const MAX_MESSAGE_CHARS = 1200
 
-const isConversationMessage = (entry: ChatConversationEntry): entry is ChatMessageEntry =>
-  entry.kind === "message" && (entry.role === "user" || entry.role === "assistant")
+export const buildRecentMessages = (
+  messages: ChatMessageRecord[],
+): AiChatMessage[] | undefined => {
+  const recentMessages = messages
+    .slice(-MAX_RECENT_MESSAGES)
+    .map(({ role, content }) => ({
+      role,
+      content: content.slice(0, MAX_MESSAGE_CHARS),
+    }))
 
-export const buildConversationWindow = (
-  entries: ChatConversationEntry[],
-): AiChatConversationMessage[] | undefined => {
-  const messages = entries
-    .filter(isConversationMessage)
-    .map(({ role, text }) => ({ role, text }))
-    .slice(-MAX_CONVERSATION_MESSAGES)
-
-  return messages.length ? messages : undefined
+  return recentMessages.length ? recentMessages : undefined
 }

@@ -17,6 +17,7 @@ type SelectProps = {
     value?: string
     options?: SelectOptionItem[]
     onChange?: (value: string) => void
+    isDisabled?: boolean
 }
 
 export default function Select({
@@ -24,6 +25,7 @@ export default function Select({
     value,
     options = [],
     onChange,
+    isDisabled = false,
 }: SelectProps) {
     const selectId = useId()
     const selectOptions = options.map(item => ({
@@ -45,6 +47,7 @@ export default function Select({
             <ReactSelect
                 inputId={selectId}
                 aria-label={label}
+                isDisabled={isDisabled}
                 unstyled
                 value={selectedOption}
                 options={selectOptions}

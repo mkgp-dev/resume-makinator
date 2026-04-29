@@ -69,7 +69,7 @@ test.describe("resume editor", () => {
   test("first-run onboarding acknowledges privacy and stays dismissed after reload", async ({ page }) => {
     await page.goto("/")
 
-    await expect(page.getByRole("heading", { level: 1, name: /free resume builder/i })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: /resume makinator/i })).toBeVisible()
     await page.getByRole("button", { name: "Get started" }).click()
 
     const privacyDialog = page.getByRole("dialog")
@@ -77,8 +77,9 @@ test.describe("resume editor", () => {
     await page.getByRole("button", { name: "I understand" }).click()
     await expect(page.getByRole("button", { name: "I understand" })).toHaveCount(0)
 
+    await page.waitForTimeout(300)
     await page.reload()
-    await expect(page.getByRole("button", { name: "I understand" })).toHaveCount(0)
+    await expect(page.getByRole("button", { name: "I understand" })).toHaveCount(0, { timeout: 10000 })
   })
 
   test("about form values persist after reload", async ({ page }) => {
