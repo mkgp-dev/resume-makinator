@@ -1,495 +1,282 @@
 import { nanoid } from "nanoid"
 import { validateImportData } from "@/entities/resume/validation/import"
-import { dedupeDraftListItems, normalizeDraftListItem, parseDraftStringList } from "@/features/chat-assistant/lib/stringListDraft"
-import { parseDraftJsonObject } from "@/features/chat-assistant/lib/structuredDraftJson"
-import type { ResumeImportData } from "@/entities/resume/types"
-import type { AiDraftChange } from "@/features/chat-assistant/types"
+import type {
+  CoreSkillItem,
+  EducationItem,
+  ReferenceItem,
+  ResumeImportData,
+  WorkExperienceItem,
+  ProjectItem,
+  CertificateItem,
+  AchievementItem,
+} from "@/entities/resume/types"
+import type {
+  AppendListItemChange,
+  ProposedChange,
+  ShowSectionChange,
+  UpdateListItemChange,
+} from "@/features/chat-assistant/types"
 
 type ApplyDraftResult =
   | { ok: true; data: ResumeImportData }
   | { ok: false; error: string }
 
-type UnknownRecord = Record<string, unknown>
+type ObjectWithId = { id: string }
 
-const isPlainObject = (value: unknown): value is UnknownRecord =>
-  typeof value === "object" && value !== null && !Array.isArray(value)
+const withId = <T extends { id?: string }>(value: T): T & { id: string } => ({
+  ...value,
+  id: value.id ?? nanoid(),
+})
 
-const isStringArray = (value: unknown): value is string[] =>
-  Array.isArray(value) && value.every((item) => typeof item === "string")
+const appendObjectItem = <T extends ObjectWithId, TValue extends Omit<T, "id"> & { id?: string }>(
+  items: T[],
+  value: TValue,
+): T[] => [...items, withId(value) as unknown as T]
 
-const parseDraftBoolean = (value: string) => {
-  const normalized = value.trim().toLowerCase()
+const updateObjectItem = <T extends ObjectWithId>(
+  items: T[],
+  itemId: string,
+  value: Partial<T>,
+) => {
+  const index = items.findIndex((item) => item.id === itemId)
+  if (index === -1) return null
 
-  if (normalized === "true") return true
-  if (normalized === "false") return false
+  const nextItems = [...items]
+  nextItems[index] = {
+    ...nextItems[index],
+    ...value,
+    id: itemId,
+  }
 
-  return null
+  return nextItems
 }
 
-const parseDraftString = (value: unknown) => {
-  if (typeof value === "string") return value.trim()
-  if (typeof value === "number" && Number.isFinite(value)) return String(value)
-  return null
+const deleteObjectItem = <T extends ObjectWithId>(items: T[], itemId: string) => {
+  const nextItems = items.filter((item) => item.id !== itemId)
+  return nextItems.length === items.length ? null : nextItems
 }
 
-const isEmptyListPayload = (value: unknown): boolean => {
-  if (Array.isArray(value)) {
-    return value.length === 0
-  }
-
-  if (typeof value !== "string") {
-    return false
-  }
-
-  const normalized = value.trim()
-  if (normalized === "[]") {
-    return true
-  }
-
-  try {
-    const parsed = JSON.parse(normalized) as unknown
-    return typeof parsed === "string"
-      ? isEmptyListPayload(parsed)
-      : Array.isArray(parsed) && parsed.length === 0
-  } catch {
-    return false
-  }
+const applyShowSectionChange = (
+  data: ResumeImportData,
+  change: ShowSectionChange,
+) => {
+  data.enableInRender[change.section] = true
 }
 
-const isRemoveItemDraft = (proposedText: unknown) => {
-  if (proposedText === null) return true
-
-  if (typeof proposedText !== "string") {
-    return isEmptyListPayload(proposedText)
-  }
-
-  const normalized = proposedText.trim()
-  return normalized === "" || isEmptyListPayload(proposedText)
-}
-
-const isClearSectionDraft = (change: AiDraftChange) =>
-  !change.itemId && !change.field && isEmptyListPayload(change.proposedText)
-
-const parseCoreSkillsCreateDraft = (proposedText: string) => {
-  const parsed = parseDraftJsonObject(proposedText)
-  if (!parsed) return null
-
-  const devLanguage =
-    typeof parsed.devLanguage === "string"
-      ? normalizeDraftListItem(parsed.devLanguage)
-      : ""
-  const devFramework = isStringArray(parsed.devFramework)
-    ? dedupeDraftListItems(
-        parsed.devFramework
-          .map(normalizeDraftListItem)
-          .filter(Boolean),
-      )
-    : []
-
-  if (!devLanguage || devFramework.length === 0) {
-    return null
-  }
-
-  return {
-    devLanguage,
-    devFramework,
+const appendListSectionItem = (
+  data: ResumeImportData,
+  change: AppendListItemChange,
+) => {
+  switch (change.section) {
+    case "workExperiences":
+      data.workExperiences = appendObjectItem(data.workExperiences, change.value as Omit<WorkExperienceItem, "id"> & { id?: string })
+      return
+    case "personalProjects":
+      data.personalProjects = appendObjectItem(data.personalProjects, change.value as Omit<ProjectItem, "id"> & { id?: string })
+      return
+    case "education":
+      data.education = appendObjectItem(data.education, change.value as Omit<EducationItem, "id"> & { id?: string })
+      return
+    case "certificates":
+      data.certificates = appendObjectItem(data.certificates, change.value as Omit<CertificateItem, "id"> & { id?: string })
+      return
+    case "achievements":
+      data.achievements = appendObjectItem(data.achievements, change.value as Omit<AchievementItem, "id"> & { id?: string })
+      return
+    case "references":
+      data.references = appendObjectItem(data.references, change.value as Omit<ReferenceItem, "id"> & { id?: string })
+      return
   }
 }
 
-const parsePersonalProjectCreateDraft = (proposedText: string) => {
-  const parsed = parseDraftJsonObject(proposedText)
-  if (!parsed) return null
-
-  if (
-    typeof parsed.projectName !== "string" ||
-    typeof parsed.projectSubtitle !== "string" ||
-    typeof parsed.preview !== "string" ||
-    typeof parsed.briefSummary !== "string" ||
-    typeof parsed.bulletType !== "boolean" ||
-    !isStringArray(parsed.bulletSummary)
-  ) {
-    return null
-  }
-
-  return {
-    projectName: parsed.projectName.trim(),
-    projectSubtitle: parsed.projectSubtitle.trim(),
-    preview: parsed.preview.trim(),
-    briefSummary: parsed.briefSummary.trim(),
-    bulletType: parsed.bulletType,
-    bulletSummary: dedupeDraftListItems(
-      parsed.bulletSummary
-        .map(normalizeDraftListItem)
-        .filter(Boolean),
-    ),
-  }
-}
-
-const parseWorkExperienceCreateDraft = (proposedText: string) => {
-  const parsed = parseDraftJsonObject(proposedText)
-  if (!parsed) return null
-
-  if (
-    typeof parsed.companyName !== "string" ||
-    typeof parsed.jobTitle !== "string" ||
-    typeof parsed.briefSummary !== "string" ||
-    typeof parsed.startYear !== "string" ||
-    typeof parsed.endYear !== "string" ||
-    typeof parsed.currentlyHired !== "boolean" ||
-    typeof parsed.bulletType !== "boolean" ||
-    !isStringArray(parsed.bulletSummary)
-  ) {
-    return null
-  }
-
-  return {
-    companyName: parsed.companyName.trim(),
-    jobTitle: parsed.jobTitle.trim(),
-    briefSummary: parsed.briefSummary.trim(),
-    startYear: parsed.startYear.trim(),
-    endYear: parsed.endYear.trim(),
-    currentlyHired: parsed.currentlyHired,
-    bulletType: parsed.bulletType,
-    bulletSummary: dedupeDraftListItems(
-      parsed.bulletSummary
-        .map(normalizeDraftListItem)
-        .filter(Boolean),
-    ),
-  }
-}
-
-const parseCertificateCreateDraft = (proposedText: string) => {
-  const parsed = parseDraftJsonObject(proposedText)
-  if (!parsed) return null
-
-  const certificateName = parseDraftString(parsed.certificateName)
-  const certificateIssuer = parseDraftString(parsed.certificateIssuer)
-  const yearIssued = parseDraftString(parsed.yearIssued)
-  const certificateDescription = parseDraftString(parsed.certificateDescription)
-
-  if (
-    certificateName === null ||
-    certificateIssuer === null ||
-    yearIssued === null ||
-    certificateDescription === null
-  ) {
-    return null
-  }
-
-  return {
-    certificateName,
-    certificateIssuer,
-    yearIssued,
-    certificateDescription,
-  }
-}
-
-const parseAchievementCreateDraft = (proposedText: string) => {
-  const parsed = parseDraftJsonObject(proposedText)
-  if (!parsed) return null
-
-  const achievementName = parseDraftString(parsed.achievementName)
-  const achievementIssuer = parseDraftString(parsed.achievementIssuer)
-  const yearIssued = parseDraftString(parsed.yearIssued)
-  const achievementDescription = parseDraftString(parsed.achievementDescription)
-
-  if (
-    achievementName === null ||
-    achievementIssuer === null ||
-    yearIssued === null ||
-    achievementDescription === null
-  ) {
-    return null
-  }
-
-  return {
-    achievementName,
-    achievementIssuer,
-    yearIssued,
-    achievementDescription,
-  }
-}
-
-const assignFieldValue = (
-  record: UnknownRecord,
-  field: string,
-  proposedText: string,
-): ApplyDraftResult | null => {
-  if (!Object.prototype.hasOwnProperty.call(record, field)) {
-    return { ok: false, error: `The AI draft targeted an unsupported field: ${field}.` }
-  }
-
-  const currentValue = record[field]
-
-  if (typeof currentValue === "string") {
-    record[field] = proposedText
-    return null
-  }
-
-  if (isStringArray(currentValue)) {
-    if (isEmptyListPayload(proposedText)) {
-      record[field] = []
-      return null
+const updateListSectionItem = (
+  data: ResumeImportData,
+  change: UpdateListItemChange,
+): boolean => {
+  switch (change.section) {
+    case "workExperiences": {
+      const nextItems = updateObjectItem(data.workExperiences, change.itemId, change.value as Partial<WorkExperienceItem>)
+      if (!nextItems) return false
+      data.workExperiences = nextItems
+      return true
     }
-
-    const nextValues = parseDraftStringList(proposedText)
-    if (!nextValues.ok) {
-      return { ok: false, error: `The AI draft for ${field} did not include usable text to apply.` }
+    case "personalProjects": {
+      const nextItems = updateObjectItem(data.personalProjects, change.itemId, change.value as Partial<ProjectItem>)
+      if (!nextItems) return false
+      data.personalProjects = nextItems
+      return true
     }
-
-    record[field] = nextValues.items
-    return null
-  }
-
-  if (typeof currentValue === "boolean") {
-    const nextValue = parseDraftBoolean(proposedText)
-    if (nextValue === null) {
-      return { ok: false, error: `The AI draft for ${field} did not include a usable true/false value.` }
+    case "education": {
+      const nextItems = updateObjectItem(data.education, change.itemId, change.value as Partial<EducationItem>)
+      if (!nextItems) return false
+      data.education = nextItems
+      return true
     }
-
-    record[field] = nextValue
-    return null
+    case "certificates": {
+      const nextItems = updateObjectItem(data.certificates, change.itemId, change.value as Partial<CertificateItem>)
+      if (!nextItems) return false
+      data.certificates = nextItems
+      return true
+    }
+    case "achievements": {
+      const nextItems = updateObjectItem(data.achievements, change.itemId, change.value as Partial<AchievementItem>)
+      if (!nextItems) return false
+      data.achievements = nextItems
+      return true
+    }
+    case "references": {
+      const nextItems = updateObjectItem(data.references, change.itemId, change.value as Partial<ReferenceItem>)
+      if (!nextItems) return false
+      data.references = nextItems
+      return true
+    }
   }
+}
 
-  return { ok: false, error: `The AI draft targeted a field that cannot be safely applied: ${field}.` }
+const deleteListSectionItem = (
+  data: ResumeImportData,
+  section: Exclude<AppendListItemChange["section"], never>,
+  itemId: string,
+): boolean => {
+  switch (section) {
+    case "workExperiences": {
+      const nextItems = deleteObjectItem(data.workExperiences, itemId)
+      if (!nextItems) return false
+      data.workExperiences = nextItems
+      return true
+    }
+    case "personalProjects": {
+      const nextItems = deleteObjectItem(data.personalProjects, itemId)
+      if (!nextItems) return false
+      data.personalProjects = nextItems
+      return true
+    }
+    case "education": {
+      const nextItems = deleteObjectItem(data.education, itemId)
+      if (!nextItems) return false
+      data.education = nextItems
+      return true
+    }
+    case "certificates": {
+      const nextItems = deleteObjectItem(data.certificates, itemId)
+      if (!nextItems) return false
+      data.certificates = nextItems
+      return true
+    }
+    case "achievements": {
+      const nextItems = deleteObjectItem(data.achievements, itemId)
+      if (!nextItems) return false
+      data.achievements = nextItems
+      return true
+    }
+    case "references": {
+      const nextItems = deleteObjectItem(data.references, itemId)
+      if (!nextItems) return false
+      data.references = nextItems
+      return true
+    }
+  }
 }
 
 export const applyAiDraftChanges = (
   resumeData: ResumeImportData,
-  changes: AiDraftChange[],
+  changes: ProposedChange[],
 ): ApplyDraftResult => {
-  const nextData: ResumeImportData = structuredClone(resumeData)
+  const nextData = structuredClone(resumeData)
 
   for (const change of changes) {
-    const isRemoveItemChange = Boolean(change.itemId) && !change.field && isRemoveItemDraft(change.proposedText)
-
-    if (isRemoveItemChange) {
-      const sectionValue = (nextData as UnknownRecord)[change.section]
-      if (!Array.isArray(sectionValue)) {
-        return { ok: false, error: `The AI draft targeted an unsupported section: ${change.section}.` }
-      }
-
-      const nextSectionItems = sectionValue.filter(
-        (item) => !(isPlainObject(item) && typeof item.id === "string" && item.id === change.itemId),
-      )
-
-      if (nextSectionItems.length === sectionValue.length) {
-        return {
-          ok: false,
-          error: "The AI draft referenced a resume item that does not exist in local data anymore.",
-        }
-      }
-
-      ;(nextData as UnknownRecord)[change.section] = nextSectionItems
-      continue
+    if (change.type === "show_section") {
+      applyShowSectionChange(nextData, change)
     }
-
-    if (isClearSectionDraft(change)) {
-      const sectionValue = (nextData as UnknownRecord)[change.section]
-      if (!Array.isArray(sectionValue)) {
-        return { ok: false, error: `The AI draft targeted an unsupported section: ${change.section}.` }
-      }
-
-      ;(nextData as UnknownRecord)[change.section] = []
-      continue
-    }
-
-    if (typeof change.proposedText !== "string") {
-      return { ok: false, error: "The AI draft did not include text that can be applied safely." }
-    }
-
-    if (change.section === "personalDetails") {
-      if (!change.field) {
-        return { ok: false, error: "The AI draft did not specify which personal details field to update." }
-      }
-
-      const outcome = assignFieldValue(
-        nextData.personalDetails as UnknownRecord,
-        change.field,
-        change.proposedText,
-      )
-
-      if (outcome) return outcome
-      continue
-    }
-
-    if (change.section === "softSkills") {
-      if (isEmptyListPayload(change.proposedText)) {
-        nextData.softSkills = []
-        continue
-      }
-
-      const nextSoftSkills = parseDraftStringList(change.proposedText)
-      if (!nextSoftSkills.ok) {
-        return {
-          ok: false,
-          error: "The AI draft for softSkills did not include usable text to apply.",
-        }
-      }
-
-      nextData.softSkills = nextSoftSkills.items
-      continue
-    }
-
-    if (change.section === "coreSkills" && !change.itemId && !change.field) {
-      const nextCoreSkill = parseCoreSkillsCreateDraft(change.proposedText)
-      if (!nextCoreSkill) {
-        return {
-          ok: false,
-          error: "The AI draft did not include a valid core skill group to create.",
-        }
-      }
-
-      const hasDuplicateGroup = nextData.coreSkills.some(
-        (item) => item.devLanguage.trim().toLowerCase() === nextCoreSkill.devLanguage.toLowerCase(),
-      )
-
-      if (hasDuplicateGroup) {
-        return {
-          ok: false,
-          error: `A core skill group named ${nextCoreSkill.devLanguage} already exists in local data.`,
-        }
-      }
-
-      nextData.coreSkills = [
-        ...nextData.coreSkills,
-        {
-          id: nanoid(),
-          devLanguage: nextCoreSkill.devLanguage,
-          devFramework: nextCoreSkill.devFramework,
-        },
-      ]
-      continue
-    }
-
-    if (change.section === "personalProjects" && !change.itemId && !change.field) {
-      const nextProject = parsePersonalProjectCreateDraft(change.proposedText)
-      if (!nextProject) {
-        return {
-          ok: false,
-          error: "The AI draft did not include a valid personal project item to create.",
-        }
-      }
-
-      nextData.personalProjects = [
-        ...nextData.personalProjects,
-        {
-          id: nanoid(),
-          projectName: nextProject.projectName,
-          projectSubtitle: nextProject.projectSubtitle,
-          preview: nextProject.preview,
-          briefSummary: nextProject.briefSummary,
-          bulletType: nextProject.bulletType,
-          bulletSummary: nextProject.bulletSummary,
-        },
-      ]
-      continue
-    }
-
-    if (change.section === "workExperiences" && !change.itemId && !change.field) {
-      const nextWorkExperience = parseWorkExperienceCreateDraft(change.proposedText)
-      if (!nextWorkExperience) {
-        return {
-          ok: false,
-          error: "The AI draft did not include a valid work experience item to create.",
-        }
-      }
-
-      nextData.workExperiences = [
-        ...nextData.workExperiences,
-        {
-          id: nanoid(),
-          companyName: nextWorkExperience.companyName,
-          jobTitle: nextWorkExperience.jobTitle,
-          briefSummary: nextWorkExperience.briefSummary,
-          startYear: nextWorkExperience.startYear,
-          endYear: nextWorkExperience.endYear,
-          currentlyHired: nextWorkExperience.currentlyHired,
-          bulletType: nextWorkExperience.bulletType,
-          bulletSummary: nextWorkExperience.bulletSummary,
-        },
-      ]
-      continue
-    }
-
-    if (change.section === "certificates" && !change.itemId && !change.field) {
-      const nextCertificate = parseCertificateCreateDraft(change.proposedText)
-      if (!nextCertificate) {
-        return {
-          ok: false,
-          error: "The AI draft did not include a valid certificate item to create.",
-        }
-      }
-
-      nextData.certificates = [
-        ...nextData.certificates,
-        {
-          id: nanoid(),
-          certificateName: nextCertificate.certificateName,
-          certificateIssuer: nextCertificate.certificateIssuer,
-          yearIssued: nextCertificate.yearIssued,
-          certificateDescription: nextCertificate.certificateDescription,
-        },
-      ]
-      continue
-    }
-
-    if (change.section === "achievements" && !change.itemId && !change.field) {
-      const nextAchievement = parseAchievementCreateDraft(change.proposedText)
-      if (!nextAchievement) {
-        return {
-          ok: false,
-          error: "The AI draft did not include a valid achievement item to create.",
-        }
-      }
-
-      nextData.achievements = [
-        ...nextData.achievements,
-        {
-          id: nanoid(),
-          achievementName: nextAchievement.achievementName,
-          achievementIssuer: nextAchievement.achievementIssuer,
-          yearIssued: nextAchievement.yearIssued,
-          achievementDescription: nextAchievement.achievementDescription,
-        },
-      ]
-      continue
-    }
-
-    const sectionValue = (nextData as UnknownRecord)[change.section]
-    if (!Array.isArray(sectionValue)) {
-      return { ok: false, error: `The AI draft targeted an unsupported section: ${change.section}.` }
-    }
-
-    if (!change.itemId || !change.field) {
-      return {
-        ok: false,
-        error: "The AI draft did not include enough detail to safely update a resume item.",
-      }
-    }
-
-    const targetItem = sectionValue.find((item) =>
-      isPlainObject(item) && typeof item.id === "string" && item.id === change.itemId,
-    )
-
-    if (!isPlainObject(targetItem)) {
-      return {
-        ok: false,
-        error: "The AI draft referenced a resume item that does not exist in local data anymore.",
-      }
-    }
-
-    const outcome = assignFieldValue(targetItem, change.field, change.proposedText)
-    if (outcome) return outcome
   }
 
-  const sanitizedData = validateImportData(nextData)
-  if (!sanitizedData) {
+  for (const change of changes) {
+    if (change.type === "show_section") continue
+
+    switch (change.type) {
+      case "replace_field":
+        nextData.personalDetails.summary = change.value
+        break
+      case "replace_list":
+        if (change.section === "personalDetails.knownLanguages") {
+          nextData.personalDetails.knownLanguages = [...change.value]
+          break
+        }
+        if (change.section === "softSkills") {
+          nextData.softSkills = [...change.value]
+          break
+        }
+        nextData.coreSkills = change.value.map((item) => withId(item) as CoreSkillItem)
+        break
+      case "append_item":
+        if (change.section === "personalDetails.knownLanguages") {
+          nextData.personalDetails.knownLanguages = [
+            ...nextData.personalDetails.knownLanguages,
+            change.value,
+          ]
+          break
+        }
+        if (change.section === "softSkills") {
+          nextData.softSkills = [...nextData.softSkills, change.value]
+          break
+        }
+        if (change.section === "coreSkills") {
+          nextData.coreSkills = appendObjectItem(nextData.coreSkills, change.value)
+          break
+        }
+        appendListSectionItem(nextData, change)
+        break
+      case "update_item":
+        if (change.section === "coreSkills") {
+          const nextItems = updateObjectItem(nextData.coreSkills, change.itemId, change.value as Partial<CoreSkillItem>)
+          if (!nextItems) {
+            return {
+              ok: false,
+              error: "The AI draft referenced a resume item that does not exist in local data anymore.",
+            }
+          }
+          nextData.coreSkills = nextItems
+          break
+        }
+        if (!updateListSectionItem(nextData, change)) {
+          return {
+            ok: false,
+            error: "The AI draft referenced a resume item that does not exist in local data anymore.",
+          }
+        }
+        break
+      case "delete_item":
+        if (change.section === "coreSkills") {
+          const nextItems = deleteObjectItem(nextData.coreSkills, change.itemId)
+          if (!nextItems) {
+            return {
+              ok: false,
+              error: "The AI draft referenced a resume item that does not exist in local data anymore.",
+            }
+          }
+          nextData.coreSkills = nextItems
+          break
+        }
+        if (!deleteListSectionItem(nextData, change.section, change.itemId)) {
+          return {
+            ok: false,
+            error: "The AI draft referenced a resume item that does not exist in local data anymore.",
+          }
+        }
+        break
+    }
+  }
+
+  const validatedData = validateImportData(nextData)
+  if (!validatedData) {
     return {
       ok: false,
-      error: "The confirmed draft could not be validated against the current resume schema.",
+      error: "The AI draft could not be applied safely to the current resume data.",
     }
   }
 
-  return { ok: true, data: sanitizedData }
+  return {
+    ok: true,
+    data: validatedData,
+  }
 }

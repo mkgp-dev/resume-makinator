@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
 
-const SITE_TITLE = "Resume Makinator | Free Resume Builder & PDF Export"
+const SITE_TITLE = "Resume Makinator | Free Online Resume Builder"
 const SITE_DESCRIPTION =
-  "Build a polished resume in your browser with Resume Makinator. Fill structured sections, reorder content, preview live PDFs, and export fast."
+  "Create a free resume in your browser with structured editing, live PDF preview, export tools, and chat assistant guidance for cleaner resume content."
 const SITE_URL = "https://rm.mkgpdev.xyz/"
 const OG_IMAGE_URL = "https://rm.mkgpdev.xyz/logo.png"
 
@@ -34,7 +34,7 @@ test.describe("seo", () => {
     expect(payload.name).toBe("Resume Makinator")
     expect(payload.url).toBe(SITE_URL)
 
-    await expect(page.getByRole("heading", { level: 1, name: /resume builder/i })).toHaveCount(1)
+    await expect(page.getByRole("heading", { level: 1, name: /resume makinator/i })).toHaveCount(1)
     await expect(page.getByRole("main")).toBeVisible()
     await expect(page.getByRole("navigation")).toHaveCount(0)
   })

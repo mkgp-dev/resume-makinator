@@ -1,52 +1,27 @@
-import type { ResumeImportData } from "@/entities/resume/types"
-import type { AiChatResponse } from "@/features/chat-assistant/types"
-
-type TargetLabelResumeData = Pick<
-  ResumeImportData,
-  | "personalProjects"
-  | "workExperiences"
-  | "education"
-  | "certificates"
-  | "achievements"
-  | "references"
-  | "coreSkills"
->
+import type { AiPlanTarget, TargetLabelResumeData } from "@/features/chat-assistant/types"
 
 export const resolveTargetItemLabel = (
-  target: AiChatResponse["target"],
+  target: AiPlanTarget,
   resumeData: TargetLabelResumeData,
 ) => {
-  if (!target.itemId || !target.section) return null
+  if (!target.itemId) return null
 
-  const { itemId, section } = target
-
-  if (section === "personalProjects") {
-    return resumeData.personalProjects.find((item) => item.id === itemId)?.projectName ?? null
+  switch (target.section) {
+    case "personalProjects":
+      return resumeData.personalProjects.find((item) => item.id === target.itemId)?.projectName ?? null
+    case "workExperiences":
+      return resumeData.workExperiences.find((item) => item.id === target.itemId)?.companyName ?? null
+    case "education":
+      return resumeData.education.find((item) => item.id === target.itemId)?.schoolName ?? null
+    case "certificates":
+      return resumeData.certificates.find((item) => item.id === target.itemId)?.certificateName ?? null
+    case "achievements":
+      return resumeData.achievements.find((item) => item.id === target.itemId)?.achievementName ?? null
+    case "references":
+      return resumeData.references.find((item) => item.id === target.itemId)?.fullName ?? null
+    case "coreSkills":
+      return resumeData.coreSkills.find((item) => item.id === target.itemId)?.devLanguage ?? null
+    default:
+      return null
   }
-
-  if (section === "workExperiences") {
-    return resumeData.workExperiences.find((item) => item.id === itemId)?.companyName ?? null
-  }
-
-  if (section === "education") {
-    return resumeData.education.find((item) => item.id === itemId)?.schoolName ?? null
-  }
-
-  if (section === "certificates") {
-    return resumeData.certificates.find((item) => item.id === itemId)?.certificateName ?? null
-  }
-
-  if (section === "achievements") {
-    return resumeData.achievements.find((item) => item.id === itemId)?.achievementName ?? null
-  }
-
-  if (section === "references") {
-    return resumeData.references.find((item) => item.id === itemId)?.fullName ?? null
-  }
-
-  if (section === "coreSkills") {
-    return resumeData.coreSkills.find((item) => item.id === itemId)?.devLanguage ?? null
-  }
-
-  return null
 }
