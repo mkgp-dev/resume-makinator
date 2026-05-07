@@ -1,0 +1,63 @@
+import type { ResumeDocument } from '@/entities/resume/model'
+
+export function createResumeDocument(partial?: Partial<ResumeDocument>): ResumeDocument {
+  return {
+    id: crypto.randomUUID(),
+    title: 'My Resume',
+    version: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    content: {
+      personalDetails: {
+        fullName: '',
+        email: '',
+        phone: '',
+        location: '',
+        headline: '',
+        website: '',
+        linkedin: '',
+        github: '',
+        summary: '',
+      },
+      workExperiences: [],
+      personalProjects: [],
+      education: [],
+      certificates: [],
+      achievements: [],
+      references: [],
+      coreSkills: [],
+      softSkills: [],
+      knownLanguages: [],
+    },
+    settings: {
+      template: 'whitepaper',
+      sectionOrder: [
+        'personalDetails',
+        'workExperiences',
+        'personalProjects',
+        'education',
+        'coreSkills',
+        'softSkills',
+        'knownLanguages',
+        'certificates',
+        'achievements',
+        'references',
+      ],
+      sectionVisibility: {
+        personalDetails: true,
+        workExperiences: true,
+        personalProjects: true,
+        education: true,
+        coreSkills: true,
+        softSkills: true,
+        knownLanguages: false,
+        certificates: false,
+        achievements: false,
+        references: false,
+      },
+      fontScale: 1.0,
+      accentColor: '#10B981',
+    },
+    ...partial,
+  }
+}

@@ -1,0 +1,80 @@
+:root {
+  --color-primary: #10b981;
+  --color-primary-hover: #00dc82;
+  --color-primary-active: #08935c;
+  --color-bg: #ffffff;
+  --color-bg-secondary: #fafaf9;
+  --color-bg-tertiary: #f5f5f4;
+  --color-text: #1c1917;
+  --color-text-muted: #79716b;
+  --color-text-placeholder: #a6a09b;
+  --color-border: #e7e5e4;
+  --color-error: #ff3e00;
+  --color-warning: #f99c00;
+
+  --font-sans: 'Geist Variable', Geist, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.builder-section-row:hover {
+  background: var(--color-bg-secondary);
+}
+
+/* Builder Section Navigation Rows */
+.section-nav-row {
+  transition: background 0.12s ease;
+}
+
+.section-nav-row:hover {
+  background: var(--color-bg-secondary);
+}
+
+/* PDF Preview dark surface scrollbar */
+[data-testid="builder-preview-region"]::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-testid="builder-preview-region"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-testid="builder-preview-region"]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+/* Editor panel scrollbar */
+[data-testid="builder-editor-region"]::-webkit-scrollbar {
+  width: 4px;
+}
+
+[data-testid="builder-editor-region"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-testid="builder-editor-region"]::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+
+/* Prevent body scroll on builder page */
+body:has([data-testid="builder-editor-region"]) {
+  overflow: hidden;
+}
